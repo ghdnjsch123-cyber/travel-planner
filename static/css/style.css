@@ -1,0 +1,441 @@
+/* ==========================================================================
+   AI 여행 플래너 스타일시트 (style.css) - 미니멀 & 리조트 테마
+   ========================================================================== */
+
+/* 1. 디자인 시스템 변수 설정 */
+:root {
+    --primary: #1e40af;            /* 차분하고 세련된 딥 블루 */
+    --primary-hover: #1d4ed8;
+    --primary-light: #eff6ff;
+    --text-primary: #0f172a;       /* 선명한 텍스트 (다크 네이비/블랙) */
+    --text-secondary: #475569;     /* 본문 보조 텍스트 */
+    --text-muted: #64748b;         /* 안내 및 캡션 */
+    --border-color: #cbd5e1;       /* 경계선 */
+    --border-focus: #2563eb;       /* 포커스 경계선 */
+    --card-bg: rgba(255, 255, 255, 0.96); /* 글씨 가독성을 위한 불투명 화이트 */
+    --danger-color: #dc2626;
+    --danger-bg: #fef2f2;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-card: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
+}
+
+/* 2. 전역 리셋 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* 휴양지 배경 설정 */
+body {
+    font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 36px 20px;
+    background-color: #e0f2fe;
+    background-image: 
+        linear-gradient(rgba(240, 248, 255, 0.82), rgba(224, 242, 254, 0.88)),
+        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 3. 레이아웃 컨테이너 */
+.app-container {
+    max-width: 1240px;
+    margin: 0 auto;
+}
+
+/* 4. 헤더 (단정하고 깔끔한 제목만 배치) */
+.app-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.app-header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #0f172a;
+}
+
+/* 5. 메인 레이아웃 (2열 데스크톱) */
+.main-layout {
+    display: grid;
+    grid-template-columns: 440px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+/* 카드 박스 */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(12px);
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.3px;
+    margin-bottom: 22px;
+}
+
+/* 6. 입력 폼 */
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label,
+.label-heading {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 6px;
+}
+
+.required {
+    color: var(--danger-color);
+}
+
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.93rem;
+    font-family: inherit;
+    color: #0f172a;
+    background-color: #ffffff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* 7. 라디오 선택 그룹 */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.radio-card {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background-color: #ffffff;
+    transition: all 0.15s ease;
+}
+
+.radio-card:hover {
+    border-color: #94a3b8;
+    background-color: #f8fafc;
+}
+
+.radio-card input[type="radio"] {
+    margin-top: 3px;
+    margin-right: 10px;
+    accent-color: var(--primary);
+}
+
+.radio-content strong {
+    display: block;
+    font-size: 0.92rem;
+    color: #0f172a;
+    margin-bottom: 2px;
+}
+
+.radio-content span {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.radio-card:has(input[type="radio"]:checked) {
+    border-color: var(--primary);
+    background-color: #f0f7ff;
+}
+
+/* 8. 버튼 */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all 0.15s ease;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 13px 20px;
+    background-color: var(--primary);
+    color: #ffffff;
+    font-size: 1rem;
+    border: none;
+    margin-top: 10px;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+}
+
+.btn-primary:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background-color: #ffffff;
+    color: #334155;
+    border: 1px solid var(--border-color);
+    padding: 7px 14px;
+    font-size: 0.85rem;
+}
+
+.btn-secondary:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+.btn-sm {
+    padding: 7px 13px;
+}
+
+/* 9. 결과창 헤더 & 액션 버튼 */
+.result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+}
+
+.result-header .section-title {
+    margin-bottom: 0;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+/* 10. 상태 안내창 */
+.placeholder-box {
+    text-align: center;
+    padding: 70px 20px;
+    color: var(--text-muted);
+}
+
+.placeholder-box h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.placeholder-box p {
+    font-size: 0.92rem;
+    margin-bottom: 24px;
+}
+
+.feature-pills {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+}
+
+.feature-pills li {
+    background-color: #f1f5f9;
+    color: #475569;
+    padding: 5px 12px;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+}
+
+/* 로딩 스피너 */
+.loading-box {
+    text-align: center;
+    padding: 70px 20px;
+}
+
+.loading-spinner {
+    width: 42px;
+    height: 42px;
+    border: 3px solid #e2e8f0;
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    margin: 0 auto 18px;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-box h3 {
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin-bottom: 6px;
+}
+
+.loading-box p {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+}
+
+/* 오류 박스 */
+.alert-message {
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.error-box {
+    background-color: var(--danger-bg);
+    border: 1px solid #fecaca;
+    color: var(--danger-color);
+}
+
+/* 결과 안내 배너 */
+.notice-banner {
+    background-color: #fefce8;
+    border: 1px solid #fef08a;
+    color: #854d0e;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    margin-bottom: 22px;
+}
+
+/* 11. 마크다운 본문 */
+.markdown-body {
+    line-height: 1.8;
+    color: #1e293b;
+    word-break: break-word;
+}
+
+.markdown-body h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 6px;
+    margin-top: 26px;
+    margin-bottom: 12px;
+}
+
+.markdown-body h2:first-child {
+    margin-top: 0;
+}
+
+.markdown-body h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-top: 18px;
+    margin-bottom: 8px;
+}
+
+.markdown-body p {
+    margin-bottom: 12px;
+    color: #334155;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+    padding-left: 22px;
+    margin-bottom: 14px;
+}
+
+.markdown-body li {
+    margin-bottom: 5px;
+    color: #334155;
+}
+
+.markdown-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+}
+
+.markdown-body th,
+.markdown-body td {
+    border: 1px solid #e2e8f0;
+    padding: 9px 12px;
+    text-align: left;
+    font-size: 0.88rem;
+}
+
+.markdown-body th {
+    background-color: #f8fafc;
+    font-weight: 600;
+}
+
+.markdown-body blockquote {
+    border-left: 3px solid var(--primary);
+    background-color: #f8fafc;
+    padding: 8px 14px;
+    margin: 12px 0;
+    color: #475569;
+}
+
+/* 12. 푸터 */
+.app-footer {
+    text-align: center;
+    margin-top: 36px;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+/* 13. 반응형 모바일 */
+@media (max-width: 960px) {
+    body {
+        padding: 20px 12px;
+    }
+
+    .main-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .app-header h1 {
+        font-size: 1.7rem;
+    }
+
+    .card {
+        padding: 20px;
+    }
+}

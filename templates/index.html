@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 여행 플래너</title>
+    <!-- 구글 폰트: Noto Sans KR -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- 메인 CSS 파일 연결 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- 마크다운 렌더링 라이브러리 (Marked.js CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="background-overlay"></div>
+    <div class="app-container">
+        <!-- 상단 헤더 -->
+        <header class="app-header">
+            <h1>AI 여행 플래너</h1>
+        </header>
+
+        <!-- 메인 콘텐츠 영역: 좌측(입력 폼) / 우측(결과 화면) -->
+        <main class="main-layout">
+            <!-- 1. 좌측: 여행 정보 입력 폼 -->
+            <section class="form-section">
+                <div class="card">
+                    <h2 class="section-title">여행 조건 설정</h2>
+                    <form id="travel-form" novalidate>
+                        <!-- 1. 여행지 -->
+                        <div class="form-group">
+                            <label for="destination">1. 여행지 <span class="required">*</span></label>
+                            <input type="text" id="destination" name="destination" placeholder="예: 일본 오사카 & 교토, 제주도, 파리" required>
+                        </div>
+
+                        <!-- 2. 여행 기간 -->
+                        <div class="form-group">
+                            <label for="duration">2. 여행 기간 <span class="required">*</span></label>
+                            <input type="text" id="duration" name="duration" placeholder="예: 3박 4일, 10월 3일 ~ 10월 6일" required>
+                        </div>
+
+                        <!-- 3. 예산 -->
+                        <div class="form-group">
+                            <label for="budget">3. 여행 예산 <span class="required">*</span></label>
+                            <input type="text" id="budget" name="budget" placeholder="예: 1인당 100만원 선, 가성비 위주, 넉넉한 럭셔리" required>
+                        </div>
+
+                        <!-- 4. 관심사 및 선호 활동 -->
+                        <div class="form-group">
+                            <label for="interests">4. 관심사 및 선호 활동 <span class="required">*</span></label>
+                            <textarea id="interests" name="interests" rows="3" placeholder="예: 유명 미식 탐방, 미술관/박물관 투어, 쇼핑, 카페 투어, 사진 명소" required></textarea>
+                        </div>
+
+                        <!-- 5. 동행자 -->
+                        <div class="form-group">
+                            <label for="companions">5. 동행자 <span class="required">*</span></label>
+                            <input type="text" id="companions" name="companions" placeholder="예: 혼자, 친구 2명, 부모님과 함께, 아이 동반 가족" required>
+                        </div>
+
+                        <!-- 6. 이동수단 -->
+                        <div class="form-group">
+                            <label for="transportation">6. 선호 이동수단 <span class="required">*</span></label>
+                            <input type="text" id="transportation" name="transportation" placeholder="예: 지하철 및 대중교통, 렌터카, 도보 위주" required>
+                        </div>
+
+                        <!-- 7. 숙소 선호 -->
+                        <div class="form-group">
+                            <label for="accommodation">7. 숙소 선호 스타일 <span class="required">*</span></label>
+                            <input type="text" id="accommodation" name="accommodation" placeholder="예: 가성비 비즈니스 호텔, 료칸/온천, 감성 에어비앤비, 리조트" required>
+                        </div>
+
+                        <!-- 8. 기획 모드 선택 (Prompt A vs Prompt B) -->
+                        <div class="form-group">
+                            <label class="label-heading">8. 플래닝 스타일 선택 <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <label class="radio-card">
+                                    <input type="radio" name="prompt_type" value="A" checked>
+                                    <div class="radio-content">
+                                        <strong>Prompt A (알찬 표준 코스)</strong>
+                                        <span>핵심 랜드마크, 최적의 이동 동선과 효율적인 일정 중심</span>
+                                    </div>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" name="prompt_type" value="B">
+                                    <div class="radio-content">
+                                        <strong>Prompt B (현지 로컬 감성 코스)</strong>
+                                        <span>숨은 골목길, 현지인 맛집, 여유로운 힐링 체험 중심</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 프론트엔드 유효성 검사 에러 메시지 영역 -->
+                        <div id="form-error" class="alert-message error-box" style="display: none;"></div>
+
+                        <!-- 제출 버튼 -->
+                        <button type="submit" id="submit-btn" class="btn btn-primary">
+                            <span class="btn-text">여행 일정 생성하기</span>
+                            <span class="spinner" style="display: none;"></span>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- 2. 우측: 생성 결과 및 다운로드 영역 -->
+            <section class="result-section">
+                <div class="card result-card">
+                    <div class="result-header">
+                        <h2 class="section-title">생성된 여행 일정표</h2>
+                        <!-- 액션 버튼들 -->
+                        <div id="result-actions" class="action-buttons" style="display: none;">
+                            <button id="copy-btn" class="btn btn-secondary btn-sm" title="일정 복사">
+                                클립보드 복사
+                            </button>
+                            <button id="download-btn" class="btn btn-secondary btn-sm" title="Markdown 다운로드">
+                                Markdown 파일 다운로드
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 초기 대기 상태 안내 -->
+                    <div id="placeholder-box" class="placeholder-box">
+                        <h3>아직 생성된 일정이 없습니다.</h3>
+                        <p>좌측의 여행 조건을 입력하고 <strong>[여행 일정 생성하기]</strong> 버튼을 누르면 맞춤 일정이 생성됩니다.</p>
+                        <ul class="feature-pills">
+                            <li>전체 일정 요약</li>
+                            <li>날짜별 세부 일정</li>
+                            <li>예상 비용 산출</li>
+                            <li>이동 계획 및 준비물</li>
+                        </ul>
+                    </div>
+
+                    <!-- 로딩 상태 박스 -->
+                    <div id="loading-box" class="loading-box" style="display: none;">
+                        <div class="loading-spinner"></div>
+                        <h3 id="loading-title">[웹 검색중입니다.]</h3>
+                        <p id="loading-desc">최신 현지 정보와 트렌드를 수집하고 있습니다.</p>
+                    </div>
+
+                    <!-- 서버 에러 발생 시 박스 -->
+                    <div id="api-error-box" class="alert-message error-box" style="display: none;"></div>
+
+                    <!-- 결과 내용 렌더링 박스 -->
+                    <div id="result-content-wrapper" style="display: none;">
+                        <div class="notice-banner">
+                            <strong>안내:</strong> 실시간 변동 가능한 가격 및 매장 운영시간은 반드시 방문 전 재확인해 주세요.
+                        </div>
+                        <div id="rendered-markdown" class="markdown-body"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>© 2026 AI Travel Planner. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- 메인 자바스크립트 연결 -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
