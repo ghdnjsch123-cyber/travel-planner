@@ -25,7 +25,13 @@
     <div class="app-container">
         <!-- 상단 헤더 -->
         <header class="app-header">
-            <h1>AI 여행 플래너</h1>
+            <div class="header-inner">
+                <h1>AI 여행 플래너</h1>
+                <!-- PWA 전용 앱 설치 버튼 -->
+                <button id="pwa-install-btn" class="btn btn-install" style="display: none;" title="홈 화면 또는 PC에 앱으로 설치">
+                    앱 설치하기
+                </button>
+            </div>
         </header>
 
         <!-- 메인 콘텐츠 영역: 좌측(입력 폼) / 우측(결과 화면) -->

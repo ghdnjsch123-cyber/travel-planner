@@ -52,10 +52,18 @@ body {
     margin: 0 auto;
 }
 
-/* 4. 헤더 (단정하고 깔끔한 제목만 배치) */
+/* 4. 헤더 */
 .app-header {
-    text-align: center;
     margin-bottom: 24px;
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    max-width: 1240px;
+    margin: 0 auto;
 }
 
 .app-header h1 {
@@ -63,6 +71,40 @@ body {
     font-weight: 700;
     letter-spacing: -0.5px;
     color: #0f172a;
+    text-align: center;
+}
+
+/* PWA 설치 버튼 */
+.btn-install {
+    position: absolute;
+    right: 0;
+    background-color: #ffffff;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
+    padding: 8px 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-install:hover {
+    background-color: var(--primary);
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .header-inner {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .btn-install {
+        position: static;
+        width: 100%;
+        max-width: 240px;
+    }
 }
 
 /* 5. 메인 레이아웃 (2열 데스크톱) */

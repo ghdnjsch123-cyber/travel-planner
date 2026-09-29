@@ -268,11 +268,62 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// PWA 서비스 워커 등록
+// ==========================================
+// PWA (Progressive Web App) 기능 로직
+// ==========================================
+let deferredInstallPrompt = null;
+const pwaInstallBtn = document.getElementById('pwa-install-btn');
+
+// 1. 브라우저 설치 가능 이벤트(beforeinstallprompt) 캡처
+window.addEventListener('beforeinstallprompt', (e) => {
+    // 기본 브라우저 배너 방지
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    console.log('[PWA] 앱 설치 이벤트 감지됨');
+
+    // 화면 우측 상단의 [앱 설치하기] 버튼 표시
+    if (pwaInstallBtn) {
+        pwaInstallBtn.style.display = 'inline-block';
+    }
+});
+
+// 2. [앱 설치하기] 버튼 클릭 시 공식 설치 창 띄우기
+if (pwaInstallBtn) {
+    pwaInstallBtn.addEventListener('click', async () => {
+        if (!deferredInstallPrompt) {
+            alert('브라우저 설정 메뉴(점 3개)에서 [홈 화면에 추가] 또는 [앱 설치]를 선택하실 수도 있습니다.');
+            return;
+        }
+
+        // 설치 프롬프트 실행
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        console.log(`[PWA] 사용자 응답: ${outcome}`);
+
+        if (outcome === 'accepted') {
+            pwaInstallBtn.style.display = 'none';
+        }
+        deferredInstallPrompt = null;
+    });
+}
+
+// 3. 앱 설치 완료 이벤트
+window.addEventListener('appinstalled', () => {
+    console.log('[PWA] 앱 설치가 성공적으로 완료되었습니다.');
+    if (pwaInstallBtn) {
+        pwaInstallBtn.style.display = 'none';
+    }
+});
+
+// 4. 서비스 워커 등록
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then((reg) => console.log('[PWA] 서비스 워커 등록 성공:', reg.scope))
-            .catch((err) => console.warn('[PWA] 서비스 워커 등록 실패:', err));
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then((registration) => {
+                console.log('[PWA] 서비스 워커 등록 성공 (Scope:', registration.scope, ')');
+            })
+            .catch((err) => {
+                console.error('[PWA] 서비스 워커 등록 실패:', err);
+            });
     });
 }
