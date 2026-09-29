@@ -267,3 +267,12 @@ document.addEventListener('DOMContentLoaded', () => {
         apiErrorBox.style.display = 'block';
     }
 });
+
+// PWA 서비스 워커 등록
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then((reg) => console.log('[PWA] 서비스 워커 등록 성공:', reg.scope))
+            .catch((err) => console.warn('[PWA] 서비스 워커 등록 실패:', err));
+    });
+}

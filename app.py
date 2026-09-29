@@ -165,6 +165,20 @@ def index():
     logger.info("메인 페이지('/') 접속 요청 수신")
     return render_template('index.html')
 
+# 7-1. PWA 서비스 워커 및 매니페스트 라우트
+from flask import send_from_directory
+
+@app.route('/sw.js')
+def service_worker():
+    response = send_from_directory('static', 'sw.js')
+    response.headers['Content-Type'] = 'application/javascript'
+    response.headers['Service-Worker-Allowed'] = '/'
+    return response
+
+@app.route('/manifest.json')
+def manifest():
+    return send_from_directory('static', 'manifest.json')
+
 # 8. 여행 플랜 생성 스트리밍 API 라우트
 @app.route('/generate', methods=['POST'])
 def generate_travel_plan():
