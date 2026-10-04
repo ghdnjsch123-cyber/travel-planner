@@ -221,6 +221,152 @@ body {
     text-align: right;
 }
 
+/* 4-1. 월간 인기 여행지 순위 섹션 */
+.popular-ranking-section {
+    margin-bottom: 24px;
+}
+
+.ranking-card {
+    background-color: var(--card-bg);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: var(--radius-lg);
+    padding: 18px 24px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    backdrop-filter: blur(12px);
+}
+
+.ranking-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.ranking-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ranking-badge {
+    background-color: #eff6ff;
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.2px;
+}
+
+.ranking-title {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.ranking-tabs {
+    display: flex;
+    gap: 6px;
+    background-color: #f1f5f9;
+    padding: 3px;
+    border-radius: var(--radius-sm);
+}
+
+.ranking-tab-btn {
+    background: none;
+    border: none;
+    padding: 5px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.ranking-tab-btn.active {
+    background-color: #ffffff;
+    color: var(--primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ranking-list {
+    display: none;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.ranking-list.active {
+    display: grid;
+}
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+}
+
+.ranking-item:hover {
+    border-color: var(--primary);
+    background-color: #f0f7ff;
+    transform: translateY(-1px);
+}
+
+.rank-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #f1f5f9;
+    color: #475569;
+    font-size: 0.78rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.rank-num.top {
+    background-color: var(--primary);
+    color: #ffffff;
+}
+
+.rank-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+    .ranking-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .ranking-list {
+        grid-template-columns: 1fr;
+    }
+    .ranking-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
 /* 5. 메인 레이아웃 (2열 데스크톱) */
 .main-layout {
     display: grid;

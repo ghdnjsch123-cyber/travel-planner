@@ -34,6 +34,70 @@
             </div>
         </header>
 
+        <!-- 대한민국 기준 월간 인기 여행지 순위 배너 -->
+        <section class="popular-ranking-section">
+            <div class="ranking-card">
+                <div class="ranking-header">
+                    <div class="ranking-title-group">
+                        <span class="ranking-badge">월간 순위</span>
+                        <span class="ranking-title">대한민국 여행객 인기 여행지 순위</span>
+                    </div>
+                    <div class="ranking-tabs">
+                        <button type="button" class="ranking-tab-btn active" data-tab="domestic">국내 인기 TOP 5</button>
+                        <button type="button" class="ranking-tab-btn" data-tab="overseas">해외 인기 TOP 5</button>
+                    </div>
+                </div>
+
+                <!-- 국내 인기 순위 목록 -->
+                <div id="ranking-list-domestic" class="ranking-list active">
+                    <button type="button" class="ranking-item" data-dest="제주도">
+                        <span class="rank-num top">1</span>
+                        <span class="rank-name">제주도</span>
+                    </button>
+                    <button type="button" class="ranking-item" data-dest="부산 해운대 & 광안리">
+                        <span class="rank-num top">2</span>
+                        <span class="rank-name">부산</span>
+                    </button>
+                    <button type="button" class="ranking-item" data-dest="강원도 강릉 & 속초">
+                        <span class="rank-num top">3</span>
+                        <span class="rank-name">강릉·속초</span>
+                    </button>
+                    <button type="button" class="ranking-item" data-dest="경주 황리단길">
+                        <span class="rank-num">4</span>
+                        <span class="rank-name">경주</span>
+                    </button>
+                    <button type="button" class="ranking-item" data-dest="전남 여수 밤바다">
+                        <span class="rank-num">5</span>
+                        <span class="rank-name">여수</span>
+                    </button>
+                </div>
+
+                <!-- 해외 인기 순위 목록 -->
+                <div id="ranking-list-overseas" class="ranking-list">
+                    <button type="button" class="ranking-item" data-dest="일본 오사카 & 교토">
+                        <span class="rank-num top">1</span>
+                        <span class="rank-name">오사카·교토</span>
+                    </button>
+                    <button type="button" class="ranking-item" data-dest="일본 후쿠오카 & 유후인">
+                        <span class="rank-num top">2</span>
+                        <span class="rank-name">후쿠오카</span>
+                    </button>
+                    <button type="button" class="ranking-item" data-dest="일본 도쿄">
+                        <span class="rank-num top">3</span>
+                        <span class="rank-name">도쿄</span>
+                    </button>
+                    <button type="button" class="ranking-item" data-dest="베트남 다낭 & 호이안">
+                        <span class="rank-num">4</span>
+                        <span class="rank-name">다낭</span>
+                    </button>
+                    <button type="button" class="ranking-item" data-dest="태국 방콕">
+                        <span class="rank-num">5</span>
+                        <span class="rank-name">방콕</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
         <!-- 메인 콘텐츠 영역: 좌측(입력 폼) / 우측(결과 화면) -->
         <main class="main-layout">
             <!-- 1. 좌측: 여행 정보 입력 폼 -->

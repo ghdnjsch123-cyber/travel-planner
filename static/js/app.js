@@ -27,6 +27,48 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentRawPlan = '';
     let currentDestination = '여행지';
 
+    // ==========================================
+    // 인기 여행지 순위 탭 전환 및 원클릭 자동 입력
+    // ==========================================
+    const rankingTabBtns = document.querySelectorAll('.ranking-tab-btn');
+    const rankingLists = {
+        domestic: document.getElementById('ranking-list-domestic'),
+        overseas: document.getElementById('ranking-list-overseas')
+    };
+    const destinationInput = document.getElementById('destination');
+
+    rankingTabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabKey = btn.getAttribute('data-tab');
+            rankingTabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (rankingLists.domestic && rankingLists.overseas) {
+                rankingLists.domestic.classList.remove('active');
+                rankingLists.overseas.classList.remove('active');
+                if (rankingLists[tabKey]) {
+                    rankingLists[tabKey].classList.add('active');
+                }
+            }
+        });
+    });
+
+    // 순위 여행지 클릭 시 입력창에 즉시 자동 입력
+    const rankingItems = document.querySelectorAll('.ranking-item');
+    rankingItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const selectedDest = item.getAttribute('data-dest');
+            if (destinationInput && selectedDest) {
+                destinationInput.value = selectedDest;
+                destinationInput.focus();
+                destinationInput.style.backgroundColor = '#eff6ff';
+                setTimeout(() => {
+                    destinationInput.style.backgroundColor = '#ffffff';
+                }, 400);
+            }
+        });
+    });
+
     // 2. 폼 제출 이벤트 리스너
     travelForm.addEventListener('submit', async (e) => {
         e.preventDefault();
