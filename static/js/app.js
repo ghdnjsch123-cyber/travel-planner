@@ -273,49 +273,63 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 let deferredInstallPrompt = null;
 const pwaInstallBtn = document.getElementById('pwa-install-btn');
+const installModal = document.getElementById('install-modal');
+const closeModalBtn = document.getElementById('close-modal-btn');
+const confirmModalBtn = document.getElementById('confirm-modal-btn');
 
-// 1. 브라우저 설치 가능 이벤트(beforeinstallprompt) 캡처
+// 1. 브라우저 설치 가능 이벤트 캡처
 window.addEventListener('beforeinstallprompt', (e) => {
-    // 기본 브라우저 배너 방지
     e.preventDefault();
     deferredInstallPrompt = e;
-    console.log('[PWA] 앱 설치 이벤트 감지됨');
-
-    // 화면 우측 상단의 [앱 설치하기] 버튼 표시
-    if (pwaInstallBtn) {
-        pwaInstallBtn.style.display = 'inline-block';
-    }
+    console.log('[PWA] 앱 설치 준비 완료 (beforeinstallprompt 감지됨)');
 });
 
-// 2. [앱 설치하기] 버튼 클릭 시 공식 설치 창 띄우기
+// 2. 제목 옆 [앱 설치] 버튼 클릭 시 동작
 if (pwaInstallBtn) {
     pwaInstallBtn.addEventListener('click', async () => {
-        if (!deferredInstallPrompt) {
-            alert('브라우저 설정 메뉴(점 3개)에서 [홈 화면에 추가] 또는 [앱 설치]를 선택하실 수도 있습니다.');
-            return;
+        // 브라우저의 직접 설치 팝업이 준비되어 있는 경우
+        if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+            const { outcome } = await deferredInstallPrompt.userChoice;
+            console.log(`[PWA] 사용자 설치 선택: ${outcome}`);
+            if (outcome === 'accepted') {
+                deferredInstallPrompt = null;
+            }
+        } else {
+            // 아직 브라우저 프롬프트가 대기 중이거나 지원 브라우저 안내 필요 시 모달 표시
+            if (installModal) {
+                installModal.style.display = 'flex';
+            }
         }
-
-        // 설치 프롬프트 실행
-        deferredInstallPrompt.prompt();
-        const { outcome } = await deferredInstallPrompt.userChoice;
-        console.log(`[PWA] 사용자 응답: ${outcome}`);
-
-        if (outcome === 'accepted') {
-            pwaInstallBtn.style.display = 'none';
-        }
-        deferredInstallPrompt = null;
     });
 }
 
-// 3. 앱 설치 완료 이벤트
+// 3. 안내 모달 닫기 이벤트들
+function closeInstallModal() {
+    if (installModal) {
+        installModal.style.display = 'none';
+    }
+}
+
+if (closeModalBtn) closeModalBtn.addEventListener('click', closeInstallModal);
+if (confirmModalBtn) confirmModalBtn.addEventListener('click', closeInstallModal);
+if (installModal) {
+    installModal.addEventListener('click', (e) => {
+        if (e.target === installModal) closeInstallModal();
+    });
+}
+
+// 4. 앱 설치 완료 시 알림
 window.addEventListener('appinstalled', () => {
     console.log('[PWA] 앱 설치가 성공적으로 완료되었습니다.');
     if (pwaInstallBtn) {
-        pwaInstallBtn.style.display = 'none';
+        pwaInstallBtn.textContent = '설치 완료';
+        pwaInstallBtn.disabled = true;
+        pwaInstallBtn.style.opacity = '0.7';
     }
 });
 
-// 4. 서비스 워커 등록
+// 5. 서비스 워커 등록
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js', { scope: '/' })
