@@ -48,6 +48,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyBtn = document.getElementById('copy-btn');
     const downloadBtn = document.getElementById('download-btn');
 
+    // 이정도면 얼마지? 모달 관련 DOM
+    const calcEstimateBtn = document.getElementById('calc-estimate-btn');
+    const estimateModal = document.getElementById('estimate-modal');
+    const closeEstimateBtn = document.getElementById('close-estimate-btn');
+    const applyEstimateBudgetBtn = document.getElementById('apply-estimate-budget-btn');
+    const receiptDestName = document.getElementById('receipt-dest-name');
+    const receiptSummaryChips = document.getElementById('receipt-summary-chips');
+    const receiptNightsCount = document.getElementById('receipt-nights-count');
+    const receiptPeopleCount = document.getElementById('receipt-people-count');
+    const receiptStayCost = document.getElementById('receipt-stay-cost');
+    const receiptTransportCost = document.getElementById('receipt-transport-cost');
+    const receiptFoodCost = document.getElementById('receipt-food-cost');
+    const receiptActivityCost = document.getElementById('receipt-activity-cost');
+    const receiptTotalAmount = document.getElementById('receipt-total-amount');
+    const receiptPerPerson = document.getElementById('receipt-per-person');
+
     let currentRawPlan = '';
     let currentDestination = '여행지';
 
@@ -126,13 +142,13 @@ document.addEventListener('DOMContentLoaded', () => {
             { type: 'transport', name: 'SK렌터카 더올뉴 아반떼 CN7', price: '24시간 약 42,000원~', desc: '커플·소규모 제주 여행 인기 1위 실속형 가성비 세단', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '카니발 9인승 패밀리 밴', price: '24시간 약 85,000원~', desc: '가족 및 다인원 여행에 최적화된 넓은 실내 공간과 트렁크', img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '제주 급행버스 101/102번', price: '1회 3,000원', desc: '제주국제공항에서 동·서부 주요 해안 거점을 잇는 쾌속 버스', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
-            // 주요 명소 6선
-            { type: 'spot', name: '성산일출봉 유네스코 지질명소', price: '성인 5,000원', desc: '푸른 동해 바다 위 웅장하게 솟아오른 천연 분화구 정상 트레킹', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '협재 해수욕장 & 비양도 뷰', price: '무료입장', desc: '에메랄드빛 투명한 바다와 하얀 모래사장, 환상적인 일몰 포토존', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선 (실제 검증된 명소 사진)
+            { type: 'spot', name: '성산일출봉 유네스코 지질명소', price: '성인 5,000원', desc: '푸른 동해 바다 위 웅장하게 솟아오른 천연 분화구 정상 트레킹', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Seongsan_Ilchulbong_from_the_air.jpg/500px-Seongsan_Ilchulbong_from_the_air.jpg' },
+            { type: 'spot', name: '협재 해수욕장 & 비양도 뷰', price: '무료입장', desc: '에메랄드빛 투명한 바다와 하얀 모래사장, 환상적인 일몰 포토존', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Hyeopjae_Beach.jpg/500px-Hyeopjae_Beach.jpg' },
             { type: 'spot', name: '카멜리아힐 동백 수목원', price: '성인 10,000원', desc: '동양 최대 규모 동백꽃 정원과 피톤치드 가득한 감성 숲길', img: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '섭지코지 해안 절경 산책로', price: '무료입장', desc: '붉은 화산송이 언덕과 쪽빛 바다가 어우러진 해안 비경', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '사려니숲길 삼나무 원시림', price: '무료입장', desc: '울창한 삼나무 피톤치드를 온몸으로 느끼는 힐링 산책로', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '오설록 티뮤지엄 & 녹차밭', price: '입장 무료', desc: '끝없이 펼쳐진 초록빛 유기농 차밭과 시그니처 말차 아이스크림', img: 'https://images.unsplash.com/photo-1536257104079-aa99c6460a5a?auto=format&fit=crop&w=600&q=80' }
+            { type: 'spot', name: '섭지코지 해안 절경 산책로', price: '무료입장', desc: '붉은 화산송이 언덕과 쪽빛 바다가 어우러진 해안 비경', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Seopjikoji-ro%2C_Seongsan-eup%2C_Seogwipo-si%2C_Jeju-do%2C_South_Korea_-_panoramio.jpg/500px-Seopjikoji-ro%2C_Seongsan-eup%2C_Seogwipo-si%2C_Jeju-do%2C_South_Korea_-_panoramio.jpg' },
+            { type: 'spot', name: '사려니숲길 삼나무 원시림', price: '무료입장', desc: '울창한 삼나무 피톤치드를 온몸으로 느끼는 힐링 산책로', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Saryeoni_Forest_Path.jpg/500px-Saryeoni_Forest_Path.jpg' },
+            { type: 'spot', name: '오설록 티뮤지엄 & 녹차밭', price: '입장 무료', desc: '끝없이 펼쳐진 초록빛 유기농 차밭과 시그니처 말차 아이스크림', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Green_tea_field_in_Jeju.jpg/500px-Green_tea_field_in_Jeju.jpg' }
         ],
         busan: [
             // 숙소 5선
@@ -146,13 +162,13 @@ document.addEventListener('DOMContentLoaded', () => {
             { type: 'transport', name: '쏘카 더뉴 K5 렌터카', price: '24시간 약 49,000원~', desc: '부산역/서면역 픽업, 부산 전역 및 기장 해안 드라이브 최적', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '부산 시티투어버스 (레드라인)', price: '1일권 15,000원', desc: '부산역~광안리~해운대~용호만 주요 거점 무제한 자유 승하차', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '다이아몬드베이 럭셔리 요트 투어', price: '1인 약 25,000원~', desc: '광안대교 아래에서 노을과 야경을 즐기는 낭만 요트 세일링', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
-            // 주요 명소 6선
-            { type: 'spot', name: '광안리 해수욕장 & 광안대교', price: '무료입장', desc: '반짝이는 광안대교 LED 야경과 주말 밤 펼쳐지는 드론 라이트쇼', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '해운대 해수욕장 & 동백섬 산책로', price: '무료입장', desc: '대한민국 대표 해변과 울창한 동백나무 숲길, APEC 누리마루', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '감천문화마을 알록달록 골목', price: '무료 (지도 2,000원)', desc: '계단식 파스텔톤 집들과 어린왕자 조각상 인기 포토스팟', img: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '영도 흰여울문화마을', price: '무료입장', desc: '바다 절벽을 따라 조성된 한국의 산토리니 감성 해안 골목길', img: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '기장 해동용궁사 해안 사찰', price: '무료입장', desc: '푸른 파도가 부딪히는 바위 절벽 바로 위에 세워진 신비로운 수상 사찰', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '자갈치시장 & BIFF 광장 먹거리', price: '자유 탐방', desc: '싱싱한 활어회와 바삭한 씨앗호떡, 비빔당면 등 부산 로컬 미식 성지', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' }
+            // 주요 명소 6선 (실제 부산 랜드마크 사진)
+            { type: 'spot', name: '광안리 해수욕장 & 광안대교', price: '무료입장', desc: '반짝이는 광안대교 LED 야경과 주말 밤 펼쳐지는 드론 라이트쇼', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Gwangan_Bridge1.jpg/500px-Gwangan_Bridge1.jpg' },
+            { type: 'spot', name: '해운대 해수욕장 & 동백섬 산책로', price: '무료입장', desc: '대한민국 대표 해변과 울창한 동백나무 숲길, APEC 누리마루', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Haeundae_Beach_in_Busan.jpg/500px-Haeundae_Beach_in_Busan.jpg' },
+            { type: 'spot', name: '감천문화마을 알록달록 골목', price: '무료 (지도 2,000원)', desc: '계단식 파스텔톤 집들과 어린왕자 조각상 인기 포토스팟', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Colorful_houses_in_Gamcheon_Culture_Village_at_sunset_in_Busan_South_Korea.jpg/500px-Colorful_houses_in_Gamcheon_Culture_Village_at_sunset_in_Busan_South_Korea.jpg' },
+            { type: 'spot', name: '영도 흰여울문화마을', price: '무료입장', desc: '바다 절벽을 따라 조성된 한국의 산토리니 감성 해안 골목길', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Huinnyeoul_Culture_Village.jpg/500px-Huinnyeoul_Culture_Village.jpg' },
+            { type: 'spot', name: '기장 해동용궁사 해안 사찰', price: '무료입장', desc: '푸른 파도가 부딪히는 바위 절벽 바로 위에 세워진 신비로운 수상 사찰', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Haedong_Yonggungsa_Temple.jpg/500px-Haedong_Yonggungsa_Temple.jpg' },
+            { type: 'spot', name: '자갈치시장 & BIFF 광장 먹거리', price: '자유 탐방', desc: '싱싱한 활어회와 바삭한 씨앗호떡, 비빔당면 등 부산 로컬 미식 성지', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Jagalchi_Market_Busan_01.jpg/500px-Jagalchi_Market_Busan_01.jpg' }
         ],
         gangneung: [
             // 숙소 5선
@@ -162,16 +178,16 @@ document.addEventListener('DOMContentLoaded', () => {
             { type: 'stay', name: '안목해변 감성 오션스테이', price: '1박 약 140,000원~', desc: '커피거리 바로 앞, 테라스에서 동해 일출을 직관하는 감성 펜션', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
             { type: 'stay', name: '속초 체스터톤스 레지던스', price: '1박 약 90,000원~', desc: '청초호 인근 사계절 온천수 온수 수영장과 극가성비 호텔', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
             // 차량·교통 4선
-            { type: 'transport', name: 'KTX-이음 강릉선 고속열차', price: '편도 27,600원', desc: '서울역/청량리에서 강릉역까지 1시간 40분 만에 주파하는 준고속열차', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: 'KTX-이음 강릉선 고속열차', price: '편도 27,600원', desc: '서울역/청량리에서 강릉역까지 1시간 40분 만에 주파하는 준고속열차', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Korail_EMU-260_Gangneung_Station.jpg/500px-Korail_EMU-260_Gangneung_Station.jpg' },
             { type: 'transport', name: '그린카 투싼 올뉴 SUV 렌트', price: '24시간 약 62,000원~', desc: '강릉역/터미널 바로 앞 픽업, 7번 국도 낭만 해안 드라이브', img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '정동진 바다부채길 셔틀버스', price: '1회 약 1,500원', desc: '정동진 썬크루즈와 심곡항을 잇는 천연 해안단구 탐방 셔틀', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '속초 대포항 해상 유람선', price: '대인 약 18,000원', desc: '설악산과 속초 해안선을 바다 위에서 한눈에 조망하는 크루즈', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
-            // 주요 명소 6선
-            { type: 'spot', name: '안목해변 커피거리', price: '무료 (커피 6,000원~)', desc: '푸른 바다를 내려다보며 명품 핸드드립 커피와 디저트를 즐기는 명소', img: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선 (실제 강릉/속초 명소 사진)
+            { type: 'spot', name: '안목해변 커피거리', price: '무료 (커피 6,000원~)', desc: '푸른 바다를 내려다보며 명품 핸드드립 커피와 디저트를 즐기는 명소', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Anmok_Beach_20220430_011.jpg/500px-Anmok_Beach_20220430_011.jpg' },
             { type: 'spot', name: '강릉 아르떼뮤지엄', price: '성인 17,000원', desc: '영원한 자연을 주제로 한 빛과 소리의 환상적인 몰입형 미디어아트관', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '경포호 자전거 둘레길 & 경포대', price: '무료입장', desc: '잔잔한 호수 둘레길 자전거 산책과 탁 트인 경포 해수욕장 백사장', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '경포호 자전거 둘레길 & 경포대', price: '무료입장', desc: '잔잔한 호수 둘레길 자전거 산책과 탁 트인 경포 해수욕장 백사장', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Gyeongpo_Beach_1.jpg/500px-Gyeongpo_Beach_1.jpg' },
             { type: 'spot', name: '속초관광수산시장 (중앙시장)', price: '자유 (닭강정 2만원~)', desc: '만석닭강정, 오징어순대, 씨앗호떡 등 동해안 최고의 먹거리 천국', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '속초 영금정 해상정자', price: '무료입장', desc: '바위에 부딪히는 거문고 소리 같은 파도와 동해 일출의 명소', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '속초 영금정 해상정자', price: '무료입장', desc: '바위에 부딪히는 거문고 소리 같은 파도와 동해 일출의 명소', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Yeonggeumjeong_20221209_016.jpg/500px-Yeonggeumjeong_20221209_016.jpg' },
             { type: 'spot', name: '정동진 썬크루즈 조각공원', price: '대인 5,000원', desc: '해안 절벽 위에 올려진 초대형 유람선과 끝없는 동해 수평선 포토존', img: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80' }
         ],
         gyeongju: [
@@ -186,11 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
             { type: 'transport', name: '신경주역 쏘카 카셰어링 아반떼', price: '24시간 약 45,000원~', desc: 'KTX 신경주역 주차장에서 즉시 픽업하여 경주 전역 자유 여행', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '경주 시내 순환 10번/11번 버스', price: '1회 1,600원', desc: '경주역, 황리단길, 보문단지, 불국사를 원형으로 연결하는 핵심 버스', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '보문호수 전동 오리배 & 모터보트', price: '30분 약 25,000원', desc: '잔잔하고 넓은 보문호를 가로지르며 호수 풍경을 즐기는 힐링 보트', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
-            // 주요 명소 6선
-            { type: 'spot', name: '첨성대 & 핑크뮬리 야생화단지', price: '무료입장', desc: '동양 최고의 천문대 유적과 계절마다 만개하는 야생화 및 핑크뮬리 꽃밭', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '동궁과 월지 (안압지) 궁궐 야경', price: '성인 3,000원', desc: '달빛 아래 잔잔한 연못에 비치는 신라 별궁의 황홀한 반영 야경', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '불국사 & 다보탑·석가탑', price: '무료입장 (국가유산)', desc: '유네스코 세계문화유산, 정교한 신라 불교 석조 건축의 위대한 걸작', img: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '대릉원 고분군 & 목련 포토존', price: '대릉원 무료 (천마총 3,000원)', desc: '거대한 신라 고분들이 모여있는 신비로운 숲길과 천마총 내부 관람', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선 (실제 경주 역사문화 랜드마크 사진)
+            { type: 'spot', name: '첨성대 & 핑크뮬리 야생화단지', price: '무료입장', desc: '동양 최고의 천문대 유적과 계절마다 만개하는 야생화 및 핑크뮬리 꽃밭', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Cheomseongdae-1.jpg/500px-Cheomseongdae-1.jpg' },
+            { type: 'spot', name: '동궁과 월지 (안압지) 궁궐 야경', price: '성인 3,000원', desc: '달빛 아래 잔잔한 연못에 비치는 신라 별궁의 황홀한 반영 야경', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Water_reflection_of_Donggung_Palace_in_Wolji_Pond_at_blue_hour_in_Gyeongju_South_Korea.jpg/500px-Water_reflection_of_Donggung_Palace_in_Wolji_Pond_at_blue_hour_in_Gyeongju_South_Korea.jpg' },
+            { type: 'spot', name: '불국사 & 다보탑·석가탑', price: '무료입장 (국가유산)', desc: '유네스코 세계문화유산, 정교한 신라 불교 석조 건축의 위대한 걸작', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Lotus_Flower_Bridge_and_Seven_Treasure_Bridge_at_Bulguksa_in_Gyeongju%2C_Korea.jpg/500px-Lotus_Flower_Bridge_and_Seven_Treasure_Bridge_at_Bulguksa_in_Gyeongju%2C_Korea.jpg' },
+            { type: 'spot', name: '대릉원 고분군 & 목련 포토존', price: '대릉원 무료 (천마총 3,000원)', desc: '거대한 신라 고분들이 모여있는 신비로운 숲길과 천마총 내부 관람', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Daereungwon_Tomb_Complex.jpg/500px-Daereungwon_Tomb_Complex.jpg' },
             { type: 'spot', name: '황리단길 감성 카페 & 디저트 거리', price: '자유 탐방', desc: '전통 한옥을 리모델링한 트렌디한 카페, 십원빵, 소품샵 핫플레이스', img: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80' },
             { type: 'spot', name: '국립경주박물관 & 성덕대왕신종', price: '무료입장', desc: '신라 천년의 황금 금관과 에밀레종의 은은한 종소리를 만나는 박물관', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' }
         ],
@@ -202,17 +218,17 @@ document.addEventListener('DOMContentLoaded', () => {
             { type: 'stay', name: '슈가브리움 오션 리조트', price: '1박 약 360,000원~', desc: '발리 감성의 이국적 풀빌라 인테리어와 플로팅 조식 체험', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
             { type: 'stay', name: '유탑 마리나 호텔 & 리조트', price: '1박 약 130,000원~', desc: '여수엑스포역 인근, 요트 투어 연계 혜택과 가성비 뛰어난 오션뷰 룸', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
             // 차량·교통 4선
-            { type: 'transport', name: '여수 해상케이블카 (크리스탈 캐빈)', price: '왕복 대인 22,000원', desc: '바닥이 투명 유리로 된 바다 위를 가로지르는 아찔한 공중 횡단', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '여수 해상케이블카 (크리스탈 캐빈)', price: '왕복 대인 22,000원', desc: '바닥이 투명 유리로 된 바다 위를 가로지르는 아찔한 공중 횡단', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Yeosu_cable_car.jpg/500px-Yeosu_cable_car.jpg' },
             { type: 'transport', name: '롯데렌터카 코나 하이브리드', price: '24시간 약 52,000원~', desc: '여수엑스포역 KTX 하차 직결 픽업, 돌산도 해안도로 드라이브', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '오동도 동백열차', price: '편도 1,000원', desc: '방파제 길을 건너 동백섬 안쪽 입구까지 편안하게 연결하는 꼬마열차', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '여수 밤바다 이사부 크루즈', price: '대인 약 25,000원~', desc: '돌산대교와 거북선대교를 지나는 낭만 야경 투어와 선상 불꽃쇼', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
-            // 주요 명소 6선
-            { type: 'spot', name: '오동도 동백나무 숲길 산책로', price: '무료입장', desc: '기암절벽과 붉은 동백꽃 터널이 이어지는 여수 제1경의 아름다운 섬', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '향일암 일출 해상 사찰', price: '무료입장', desc: '거대한 바위 틈을 지나 남해 수평선이 아득하게 펼쳐지는 최고의 일출지', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선 (실제 여수 바다 및 명소 사진)
+            { type: 'spot', name: '오동도 동백나무 숲길 산책로', price: '무료입장', desc: '기암절벽과 붉은 동백꽃 터널이 이어지는 여수 제1경의 아름다운 섬', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Yeosu_Odongdo_20180929_002.jpg/500px-Yeosu_Odongdo_20180929_002.jpg' },
+            { type: 'spot', name: '향일암 일출 해상 사찰', price: '무료입장', desc: '거대한 바위 틈을 지나 남해 수평선이 아득하게 펼쳐지는 최고의 일출지', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/The_Namhae_sea_through_the_Temple_of_Hyangiram_20091205.JPG/500px-The_Namhae_sea_through_the_Temple_of_Hyangiram_20091205.JPG' },
             { type: 'spot', name: '낭만포차 거리 & 하멜등대', price: '메뉴당 3~4만원대', desc: '빨간 하멜등대 앞 바다 바람을 맞으며 맛보는 돌문어해물삼합과 버스킹', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' },
             { type: 'spot', name: '고소동 1004 벽화마을', price: '무료입장', desc: '언덕 위 아기자기한 감성 벽화들과 바다가 한눈에 내려다보이는 루프탑 카페', img: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=600&q=80' },
             { type: 'spot', name: '아쿠아플라넷 여수 & 벨루가', price: '대인 약 33,400원', desc: '귀여운 흰고래 벨루가와 대형 메인수조 해양 생태계 체험관', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '돌산공원 전망대 & 돌산대교 야경', price: '무료입장', desc: '화려한 오색 조명으로 빛나는 돌산대교와 여수항 밤바다의 전경', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' }
+            { type: 'spot', name: '돌산공원 전망대 & 돌산대교 야경', price: '무료입장', desc: '화려한 오색 조명으로 빛나는 돌산대교와 여수항 밤바다의 전경', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Dolsan_Bridge2.jpg/500px-Dolsan_Bridge2.jpg' }
         ],
         osaka: [
             // 숙소 5선
@@ -222,17 +238,17 @@ document.addEventListener('DOMContentLoaded', () => {
             { type: 'stay', name: '교토 기온 료칸 야치요', price: '1박 약 390,000원~', desc: '전통 일본식 정원과 정통 가이세키 코스 요리를 맛볼 수 있는 온천 료칸', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
             { type: 'stay', name: '호텔 더 미츠이 교토', price: '1박 약 750,000원~', desc: '니조성 정문 앞 천연 온천 수영 스파를 품은 세계적인 럭셔리 호텔', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
             // 차량·교통 4선
-            { type: 'transport', name: '간사이공항 특급 라피트 열차', price: '편도 약 13,000원', desc: '공항에서 난바역까지 38분 만에 쾌속으로 연결하는 레트로 미래형 특급', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '간사이공항 특급 라피트 열차', price: '편도 약 13,000원', desc: '공항에서 난바역까지 38분 만에 쾌속으로 연결하는 레트로 미래형 특급', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Nankai_50000_series_at_Kishi-Wada_Station.jpg/500px-Nankai_50000_series_at_Kishi-Wada_Station.jpg' },
             { type: 'transport', name: '오사카 주유패스 (Amazing Pass)', price: '1일권 약 28,000원~', desc: '오사카 시영 메트로 전 노선 무제한 탑승 + 40여 개 주요 관광지 무료 입장', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '한큐 투어리스트 1일 패스', price: '1인 약 7,000원', desc: '오사카 우메다에서 교토 가와라마치 및 고베까지 한큐 전철 무제한 이용', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: 'JR 간사이 와이드 레일패스', price: '5일권 약 105,000원', desc: '오사카, 교토, 나라, 고베, 오카야마 신칸센까지 커버하는 실속형 레일패스', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
-            // 주요 명소 6선
-            { type: 'spot', name: '도톤보리 & 글리코상 포토존', price: '무료 탐방', desc: '화려한 네온사인과 타코야키, 오코노미야키를 즐기는 오사카의 심장부', img: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '오사카성 천수각 & 성곽공원', price: '천수각 약 5,500원', desc: '황금빛 장식의 웅장한 천수각과 거대한 해자가 어우러진 역사 랜드마크', img: 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선 (실제 오사카 & 교토 랜드마크 사진)
+            { type: 'spot', name: '도톤보리 & 글리코상 포토존', price: '무료 탐방', desc: '화려한 네온사인과 타코야키, 오코노미야키를 즐기는 오사카의 심장부', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Dotombori_neon_signs.JPG/500px-Dotombori_neon_signs.JPG' },
+            { type: 'spot', name: '오사카성 천수각 & 성곽공원', price: '천수각 약 5,500원', desc: '황금빛 장식의 웅장한 천수각과 거대한 해자가 어우러진 역사 랜드마크', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Osaka_Castle_02bs3200.jpg/500px-Osaka_Castle_02bs3200.jpg' },
             { type: 'spot', name: '유니버설 스튜디오 재팬 (USJ)', price: '1일권 약 86,000원~', desc: '슈퍼 닌텐도 월드 마리오 카트와 위저딩 월드 오브 해리포터 테마파크', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '교토 후시미 이나리 신사 (여우신사)', price: '무료입장', desc: '산등성이를 따라 붉은 천 개의 토리이 터널이 끝없이 이어지는 신비로운 장관', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '교토 기요미즈데라 (청수사)', price: '입장료 약 3,600원', desc: '깎아지른 절벽 위 못을 쓰지 않고 지은 목조 본당과 교토 시내 전경', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '교토 아라시야마 대나무숲 (치쿠린)', price: '무료입장', desc: '바람에 서걱이는 대나무 잎 소리와 자연의 정취를 만끽하는 산책 명소', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80' }
+            { type: 'spot', name: '교토 후시미 이나리 신사 (여우신사)', price: '무료입장', desc: '산등성이를 따라 붉은 천 개의 토리이 터널이 끝없이 이어지는 신비로운 장관', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Fushimi_Inari_Taisha_Senbon_Torii.jpg/500px-Fushimi_Inari_Taisha_Senbon_Torii.jpg' },
+            { type: 'spot', name: '교토 기요미즈데라 (청수사)', price: '입장료 약 3,600원', desc: '깎아지른 절벽 위 못을 쓰지 않고 지은 목조 본당과 교토 시내 전경', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Kiyomizu-dera_in_Kyoto-r.jpg/500px-Kiyomizu-dera_in_Kyoto-r.jpg' },
+            { type: 'spot', name: '교토 아라시야마 대나무숲 (치쿠린)', price: '무료입장', desc: '바람에 서걱이는 대나무 잎 소리와 자연의 정취를 만끽하는 산책 명소', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Arashiyama_Bamboo_Grove.jpg/500px-Arashiyama_Bamboo_Grove.jpg' }
         ],
         fukuoka: [
             // 숙소 5선
@@ -244,12 +260,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // 차량·교통 4선
             { type: 'transport', name: '후쿠오카 지하철 1일 승차권', price: '1인 약 5,800원', desc: '공항선(공항에서 하카타 5분) 및 나나쿠마선 하루 종일 무제한 탑승', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: 'JR 북큐슈 레일패스 (3일권)', price: '1인 약 105,000원', desc: '하카타에서 유후인, 벳푸, 구마모토까지 특급 열차 및 신칸센 무제한', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
-            { type: 'transport', name: '특급 유후인노모리 관광열차', price: '편도 약 45,000원', desc: '원목 클래식 인테리어와 에키벤 도시락을 즐기는 초인기 온천 관광열차', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '특급 유후인노모리 관광열차', price: '편도 약 45,000원', desc: '원목 클래식 인테리어와 에키벤 도시락을 즐기는 초인기 온천 관광열차', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/JNR_KiHa_71_Yufuin_no_Mori_20100613.jpg/500px-JNR_KiHa_71_Yufuin_no_Mori_20100613.jpg' },
             { type: 'transport', name: '후쿠오카 오픈톱 시티투어 버스', price: '대인 약 15,000원', desc: '지붕 없는 2층 버스로 도심 하이웨이와 해안 도로를 달리는 투어 버스', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
-            // 주요 명소 6선
-            { type: 'spot', name: '유후인 긴린코 호수 & 유노츠보 거리', price: '무료입장', desc: '온천수가 솟아올라 신비로운 아침 물안개가 피어오르는 호수와 디저트 거리', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '다자이후 텐만구 학문의 신사', price: '무료입장', desc: '학문의 신을 모신 유서 깊은 신사와 갓 구운 우메가에모찌(매화떡)', img: 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '씨사이드 모모치 해변 & 후쿠오카 타워', price: '타워 전망대 약 7,500원', desc: '이국적인 인공 해변과 234m 타워에서 바라보는 하카타만 360도 석양', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선 (실제 후쿠오카 & 큐슈 랜드마크 사진)
+            { type: 'spot', name: '유후인 긴린코 호수 & 유노츠보 거리', price: '무료입장', desc: '온천수가 솟아올라 신비로운 아침 물안개가 피어오르는 호수와 디저트 거리', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Lake_Kinrin_in_Yufuin%2C_Oita_-_Aug_24%2C_2018_%281%29.jpg/500px-Lake_Kinrin_in_Yufuin%2C_Oita_-_Aug_24%2C_2018_%281%29.jpg' },
+            { type: 'spot', name: '다자이후 텐만구 학문의 신사', price: '무료입장', desc: '학문의 신을 모신 유서 깊은 신사와 갓 구운 우메가에모찌(매화떡)', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/20100719_Dazaifu_Tenmangu_Shrine_3328.jpg/500px-20100719_Dazaifu_Tenmangu_Shrine_3328.jpg' },
+            { type: 'spot', name: '씨사이드 모모치 해변 & 후쿠오카 타워', price: '타워 전망대 약 7,500원', desc: '이국적인 인공 해변과 234m 타워에서 바라보는 하카타만 360도 석양', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Momochi_Tower_ESE_from_Fukuoka_City_Museum_Reflecting_Pool_Momochi-hama_1-ch%C5%8Dme_Sawara-ku_Fukuoka_20240111.jpg/500px-Momochi_Tower_ESE_from_Fukuoka_City_Museum_Reflecting_Pool_Momochi-hama_1-ch%C5%8Dme_Sawara-ku_Fukuoka_20240111.jpg' },
             { type: 'spot', name: '나카스 강변 야타이(포장마차) 거리', price: '라멘 약 8,000원~', desc: '강변을 따라 늘어선 포장마차에서 진한 하카타 돈코츠 라멘과 하이볼 한잔', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' },
             { type: 'spot', name: '캐널시티 하카타 음악 분수쇼', price: '무료 관람', desc: '곡선형 복합 쇼핑몰 중심 운하에서 매시 정각 웅장하게 펼쳐지는 분수쇼', img: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?auto=format&fit=crop&w=600&q=80' },
             { type: 'spot', name: '벳푸 가마도 지옥온천 순례', price: '입장료 약 4,000원', desc: '신비로운 코발트블루 온천수와 온천 증기로 쪄낸 달걀 및 사이다 맛보기', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80' }
@@ -263,13 +279,13 @@ document.addEventListener('DOMContentLoaded', () => {
             { type: 'stay', name: '렘 롯폰기 호텔', price: '1박 약 160,000원~', desc: '롯폰기역 도보 1분, 전 객실 최고급 안마의자를 구비한 실속형 호텔', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
             // 차량·교통 4선
             { type: 'transport', name: '도쿄 서브웨이 72시간 패스', price: '1인 약 13,500원', desc: '도쿄 메트로 & 도에이 지하철 전 13개 노선을 3일간 무제한 탑승', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
-            { type: 'transport', name: '케이세이 스카이라이너 급행', price: '편도 약 21,000원', desc: '나리타공항에서 닛포리/우에노까지 시속 160km로 36분 만에 주파', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '케이세이 스카이라이너 급행', price: '편도 약 21,000원', desc: '나리타공항에서 닛포리/우에노까지 시속 160km로 36분 만에 주파', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Keisei_Skyliner_AE01_20100717.jpg/500px-Keisei_Skyliner_AE01_20100717.jpg' },
             { type: 'transport', name: '나리타 익스프레스 (N\'EX) 왕복', price: '외국인 왕복 약 45,000원', desc: '나리타공항에서 도쿄역, 신주쿠, 시부야까지 갈아탐 없이 직통 연결', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '유리카모메 무인 모노레일', price: '1일권 약 7,400원', desc: '레인보우 브릿지를 건너 오다이바 해상 인공섬을 감상하는 모노레일', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
-            // 주요 명소 6선
-            { type: 'spot', name: '시부야 스카이 전망대 & 스크램블', price: '입장권 약 20,000원~', desc: '지상 229m 옥상 루프탑에서 즐기는 360도 도쿄 전경과 교차로 인파', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '아사쿠사 센소지 사원 & 나카미세도리', price: '무료입장', desc: '붉은 카미나리몬 제등과 전통 간식(당고, 멜론빵)이 늘어선 도쿄 최고 사찰', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '롯폰기 힐즈 모리타워 전망대', price: '대인 약 18,000원', desc: '도쿄타워의 붉은 불빛이 가장 아름다운 각도로 내려다보이는 야경 명소', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선 (실제 도쿄 랜드마크 사진)
+            { type: 'spot', name: '시부야 스카이 전망대 & 스크램블', price: '입장권 약 20,000원~', desc: '지상 229m 옥상 루프탑에서 즐기는 360도 도쿄 전경과 교차로 인파', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Tokyo_Shibuya_Scramble_Crossing_2018-10-09.jpg/500px-Tokyo_Shibuya_Scramble_Crossing_2018-10-09.jpg' },
+            { type: 'spot', name: '아사쿠사 센소지 사원 & 카미나리몬', price: '무료입장', desc: '붉은 카미나리몬 제등과 전통 간식(당고, 멜론빵)이 늘어선 도쿄 최고 사찰', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Tokyo-metro-Kaminarimon-Sensoji-District-Gate.jpg/500px-Tokyo-metro-Kaminarimon-Sensoji-District-Gate.jpg' },
+            { type: 'spot', name: '도쿄타워 전망대 & 야경', price: '대인 약 14,000원', desc: '도쿄의 상징이자 붉은 조명으로 물드는 낭만적인 클래식 랜드마크', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Tokyo_Tower_and_around_Skyscrapers.jpg/500px-Tokyo_Tower_and_around_Skyscrapers.jpg' },
             { type: 'spot', name: '메이지 신궁 & 하라주쿠 다케시타', price: '무료입장', desc: '도심 속 거대한 원시림 숲길과 일본 10대 유행 발신지 골목의 반전 매력', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80' },
             { type: 'spot', name: '신주쿠 교엔 황실 정원', price: '대인 500엔 (약 4,500원)', desc: '전통 일본식 정원과 프랑스식 정원이 조화된 애니메이션 감성 도심 오아시스', img: 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=600&q=80' },
             { type: 'spot', name: '팀랩 플래닛 도쿄 (토요스)', price: '입장권 약 36,000원~', desc: '맨발로 물속을 걸으며 온몸으로 체험하는 환상적인 빛과 인터랙티브 미디어아트', img: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=600&q=80' }
@@ -286,11 +302,11 @@ document.addEventListener('DOMContentLoaded', () => {
             { type: 'transport', name: '그랩 (Grab) 택시 호출 서비스', price: '1회 약 3,000~8,000원', desc: '바가지 걱정 없이 정찰제로 시내와 해변을 편리하게 이동하는 필수 앱', img: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '바나힐 왕복 리무진 셔틀버스', price: '1인 왕복 약 12,000원', desc: '시내 호텔에서 바나힐 케이블카 승강장까지 편안하게 이동하는 셔틀', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '호이안 투본강 목선 소원배', price: '1척(2~3인) 약 10,000원', desc: '형형색색의 등불을 켜고 강물에 소원초를 띄우는 낭만적인 나룻배', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
-            // 주요 명소 6선
-            { type: 'spot', name: '썬월드 바나힐 골든브릿지 (신의 손)', price: '입장권 약 48,000원', desc: '해발 1,400m 구름 위 거대한 바위 손이 받치고 있는 금빛 다리 랜드마크', img: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '호이안 올드타운 유네스코 역사거리', price: '거리 티켓 약 6,500원', desc: '노란빛 프랑스-베트남풍 건물들과 밤마다 빛나는 환상적인 오색 등불', img: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '미케비치 해변 & 패러세일링', price: '무료 (코코넛 2,000원)', desc: '포브스 선정 세계 6대 해변, 백사장과 야자수가 이어지는 휴양 성지', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '다낭 대성당 (핑크성당)', price: '무료입장', desc: '프랑스 식민지 시절 세워진 파스텔 핑크빛 고딕 양식 건축물과 포토존', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선 (실제 다낭 & 호이안 랜드마크 사진)
+            { type: 'spot', name: '썬월드 바나힐 골든브릿지 (신의 손)', price: '입장권 약 48,000원', desc: '해발 1,400m 구름 위 거대한 바위 손이 받치고 있는 금빛 다리 랜드마크', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Golden_Bridge_at_Ba_Na_Hills_20250718.jpg/500px-Golden_Bridge_at_Ba_Na_Hills_20250718.jpg' },
+            { type: 'spot', name: '호이안 올드타운 유네스코 역사거리', price: '거리 티켓 약 6,500원', desc: '노란빛 프랑스-베트남풍 건물들과 밤마다 빛나는 환상적인 오색 등불', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Hoi_An_lanterns_at_night.jpg/500px-Hoi_An_lanterns_at_night.jpg' },
+            { type: 'spot', name: '미케비치 해변 & 휴양 비치', price: '무료 (코코넛 2,000원)', desc: '포브스 선정 세계 6대 해변, 백사장과 야자수가 이어지는 휴양 성지', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '다낭 대성당 (핑크성당)', price: '무료입장', desc: '프랑스 식민지 시절 세워진 파스텔 핑크빛 고딕 양식 건축물과 포토존', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Da_Nang_Cathedral_20181023.jpg/500px-Da_Nang_Cathedral_20181023.jpg' },
             { type: 'spot', name: '손짜 린응사 (영흥사) 해수관음상', price: '무료입장', desc: '다낭 바다를 굽어보는 67m 높이의 동양 최대 백옥 해수관음보살상', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
             { type: 'spot', name: '안방비치 & 덱하우스 레스토랑', price: '자유 (식사 1~2만원대)', desc: '푸른 파도를 바라보며 시원한 수제 버거와 망고 스무디를 즐기는 비치클럽', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' }
         ],
@@ -306,10 +322,10 @@ document.addEventListener('DOMContentLoaded', () => {
             { type: 'transport', name: '차오프라야 투어리스트 보트 홉온홉오프', price: '1일권 150바트 (약 6,000원)', desc: '왕궁, 왓 아룬, 아이콘시암 등 주요 강변 관광지를 오가는 수상 크루즈', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '볼트 (Bolt) / 그랩 (Grab) 차량 호출', price: '1회 약 3,000~9,000원', desc: '교통 체증 심한 방콕에서 바가지 없이 정찰제로 승차하는 필수 앱', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
             { type: 'transport', name: '수완나품 국제공항 프라이빗 VIP 밴', price: '편도 약 32,000원', desc: '공항 입국장 피켓 미팅 후 호텔 로비까지 짐 싣고 직행하는 쾌적한 이동', img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80' },
-            // 주요 명소 6선
-            { type: 'spot', name: '왓 아룬 (새벽사원) & 전통의상 스냅', price: '입장료 약 4,000원', desc: '도자기 타일로 장식된 화려한 불탑과 강 건너로 지는 환상적인 일몰 뷰', img: 'https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선 (실제 방콕 랜드마크 사진)
+            { type: 'spot', name: '왓 아룬 (새벽사원) & 전통의상 스냅', price: '입장료 약 4,000원', desc: '도자기 타일로 장식된 화려한 불탑과 강 건너로 지는 환상적인 일몰 뷰', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Templo_Wat_Arun%2C_Bangkok%2C_Tailandia%2C_2013-08-22%2C_DD_30.jpg/500px-Templo_Wat_Arun%2C_Bangkok%2C_Tailandia%2C_2013-08-22%2C_DD_30.jpg' },
             { type: 'spot', name: '아이콘시암 복합 쇼핑몰 (쑥시암)', price: '무료 관람 (간식 1,500원~)', desc: '실내에 그대로 재현된 태국 수상시장 먹거리와 세계적 명품 브랜드 타운', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' },
-            { type: 'spot', name: '왓 프라깨우 (에메랄드 사원) & 방콕 왕궁', price: '입장료 약 20,000원', desc: '태국 최고의 국보인 에메랄드 불상을 모신 찬란한 황금빛 왕실 사원', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '왓 프라깨우 (에메랄드 사원) & 방콕 왕궁', price: '입장료 약 20,000원', desc: '태국 최고의 국보인 에메랄드 불상을 모신 찬란한 황금빛 왕실 사원', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/A_roof_of_a_building_at_the_Grand_Palace%2C_Bangkok%2C_sunrise%2C_2017.jpg/500px-A_roof_of_a_building_at_the_Grand_Palace%2C_Bangkok%2C_sunrise%2C_2017.jpg' },
             { type: 'spot', name: '짜뚜짝 주말시장 벼룩시장', price: '자유 탐방', desc: '15,000개 이상의 상점이 밀집한 동남아 최대 규모의 야외 쇼핑 마켓', img: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80' },
             { type: 'spot', name: '티츄카 (Tichuca) 루프탑 바', price: '칵테일 약 20,000원~', desc: '거대한 발광 해파리 조형물과 46층에서 바라보는 360도 방콕 도시 야경', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
             { type: 'spot', name: '아시아티크 더 리버프론트 야시장', price: '무료입장', desc: '강변 대관람차와 시원한 강바람을 맞으며 즐기는 쇼핑 및 라이브 펍 거리', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' }
@@ -376,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return `
             <div class="spot-card" data-type="${spot.type}">
                 <div class="spot-card-img-wrap">
-                    <img src="${spot.img}" alt="${spot.name}" class="spot-card-img" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=600&q=80'">
+                    <img src="${spot.img}" alt="${spot.name}" class="spot-card-img" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=600&q=80'">
                     <span class="spot-type-badge ${spot.type}">${typeBadgeText}</span>
                     <span class="spot-price-badge">${spot.price}</span>
                 </div>
@@ -946,6 +962,256 @@ document.addEventListener('DOMContentLoaded', () => {
 
         URL.revokeObjectURL(url);
     });
+
+    // ==========================================
+    // 11. 💸 [이정도면 얼마지?] 예상 경비 산출 & 예산 자동 적용 모달
+    // ==========================================
+    let calculatedGrandTotal = 0;
+
+    if (calcEstimateBtn) {
+        calcEstimateBtn.addEventListener('click', () => {
+            const destination = destinationInput.value.trim();
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+
+            if (!destination) {
+                showFormError('여행지를 먼저 입력하거나 상단 추천 여행지를 선택해주세요! ✈️');
+                destinationInput.focus();
+                return;
+            }
+
+            if (!startDate || !endDate) {
+                showFormError('여행 기간(시작일과 종료일)을 먼저 선택해주세요! 📅');
+                startDateInput.focus();
+                return;
+            }
+
+            hideFormError();
+
+            // 1) 여행 기간(박/일수) 계산
+            const startObj = new Date(startDate);
+            const endObj = new Date(endDate);
+            let diffDays = Math.round((endObj - startObj) / (1000 * 60 * 60 * 24));
+            if (diffDays < 1) diffDays = 1;
+            const nights = diffDays;
+            const days = nights + 1;
+
+            // 2) 인원 및 관계
+            const companionCount = parseInt(companionRange.value, 10) || 1;
+            const activeRelationBtn = document.querySelector('#relation-btn-group .choice-btn.active');
+            const relation = activeRelationBtn ? activeRelationBtn.getAttribute('data-relation') : '동행';
+
+            // 3) 이동수단 및 숙소 스타일
+            const activeTransportBtn = document.querySelector('#transport-btn-group .choice-btn.active');
+            const transportation = activeTransportBtn ? activeTransportBtn.getAttribute('data-val') : '대중교통';
+
+            const activeLodgingBtn = document.querySelector('#lodging-btn-group .choice-btn.active');
+            const accommodation = activeLodgingBtn ? activeLodgingBtn.getAttribute('data-val') : '가성비 호텔';
+
+            // 4) 여행 스타일 및 관심사
+            const activeStyleBtn = document.querySelector('#style-choice-group .style-card-btn.active');
+            const promptType = activeStyleBtn ? activeStyleBtn.getAttribute('data-style') : '알찬 핵심 코스';
+            const selectedInterests = getSelectedInterests();
+
+            // 5) 지역 성격 분석 (해외/제주/국내)
+            const isEuropeOrUS = /로마|피렌체|프라하|바르셀로나|파리|하와이|시드니|유럽|미국|이탈리아|프랑스|스페인|체코|호주/.test(destination);
+            const isJapan = /일본|오사카|교토|후쿠오카|유후인|도쿄|삿포로|나고야/.test(destination);
+            const isSoutheastAsia = /다낭|호이안|나트랑|달랏|푸꾸옥|방콕|치앙마이|타이베이|발리|싱가포르|세부|보홀|베트남|태국|대만|필리핀|인도네시아/.test(destination);
+            const isOverseas = isEuropeOrUS || isJapan || isSoutheastAsia;
+            const isJeju = /제주/.test(destination);
+
+            // 6) 숙박비(stayCost) 계산
+            let roomCostPerNight = 90000; // 2인 1실 기본
+            if (accommodation === '노숙' || accommodation === '잠을 안 자는 사람') {
+                roomCostPerNight = 0;
+            } else if (accommodation.includes('게스트하우스') || accommodation.includes('호스텔')) {
+                roomCostPerNight = 35000; // 1인당 35,000원
+            } else if (accommodation.includes('가성비')) {
+                roomCostPerNight = 90000;
+            } else if (accommodation.includes('부티크') || accommodation.includes('감성')) {
+                roomCostPerNight = 180000;
+            } else if (accommodation.includes('고급') || accommodation.includes('호텔/리조트')) {
+                roomCostPerNight = 320000;
+            } else if (accommodation.includes('독채') || accommodation.includes('풀빌라')) {
+                roomCostPerNight = 360000;
+            } else if (accommodation.includes('캠핑') || accommodation.includes('글램핑')) {
+                roomCostPerNight = 160000;
+            } else {
+                roomCostPerNight = 110000;
+            }
+
+            if (isEuropeOrUS) roomCostPerNight = Math.round(roomCostPerNight * 1.5);
+            else if (isJapan) roomCostPerNight = Math.round(roomCostPerNight * 1.15);
+
+            let stayCost = 0;
+            if (accommodation === '노숙' || accommodation === '잠을 안 자는 사람') {
+                stayCost = 0;
+            } else if (accommodation.includes('게스트하우스') || accommodation.includes('호스텔')) {
+                stayCost = companionCount * roomCostPerNight * nights;
+            } else if (accommodation.includes('독채') || accommodation.includes('풀빌라')) {
+                const villasNeeded = Math.max(1, Math.ceil(companionCount / 4));
+                stayCost = villasNeeded * roomCostPerNight * nights;
+            } else {
+                const roomsNeeded = Math.max(1, Math.ceil(companionCount / 2));
+                stayCost = roomsNeeded * roomCostPerNight * nights;
+            }
+
+            // 7) 교통비(transportCost) 계산
+            let transportCost = 0;
+            if (isEuropeOrUS) {
+                const flightPerPerson = 1200000;
+                const localTransportPerPerson = 20000 * days;
+                transportCost = companionCount * (flightPerPerson + localTransportPerPerson);
+            } else if (isJapan) {
+                const flightPerPerson = 320000;
+                const localTransportPerPerson = 15000 * days;
+                transportCost = companionCount * (flightPerPerson + localTransportPerPerson);
+            } else if (isSoutheastAsia) {
+                const flightPerPerson = 380000;
+                const localTransportPerPerson = 12000 * days;
+                transportCost = companionCount * (flightPerPerson + localTransportPerPerson);
+            } else if (isJeju) {
+                const flightPerPerson = 110000;
+                if (transportation.includes('렌터카')) {
+                    const carsNeeded = Math.max(1, Math.ceil(companionCount / 4));
+                    const carRent = carsNeeded * 55000 * days + (carsNeeded * 25000 * days);
+                    transportCost = (companionCount * flightPerPerson) + carRent;
+                } else {
+                    transportCost = companionCount * (flightPerPerson + 15000 * days);
+                }
+            } else {
+                // 국내 육상 여행
+                if (transportation.includes('렌터카')) {
+                    const carsNeeded = Math.max(1, Math.ceil(companionCount / 4));
+                    transportCost = (carsNeeded * 55000 * days) + (carsNeeded * 30000 * days) + (companionCount * 30000); // 렌트+유류+KTX일부
+                } else if (transportation.includes('자차')) {
+                    const carsNeeded = Math.max(1, Math.ceil(companionCount / 4));
+                    transportCost = carsNeeded * (60000 + 20000 * days); // 유류비 + 통행료
+                } else if (transportation.includes('대중교통')) {
+                    transportCost = companionCount * (55000 + 8000 * days); // KTX/고속버스 왕복 + 시내교통
+                } else if (transportation.includes('도보') || transportation.includes('자전거')) {
+                    transportCost = companionCount * (20000 + 5000 * days);
+                } else {
+                    transportCost = companionCount * (50000 + 10000 * days);
+                }
+            }
+
+            // 8) 식비(foodCost) 계산
+            let foodPerPersonPerDay = 35000; // 1인 1일 3끼 기준
+            if (promptType.includes('미식') || promptType.includes('맛집') || selectedInterests.some(i => i.includes('맛집') || i.includes('카페'))) {
+                foodPerPersonPerDay = 55000;
+            } else if (promptType.includes('가성비') || promptType.includes('알뜰')) {
+                foodPerPersonPerDay = 25000;
+            } else if (promptType.includes('럭셔리') || promptType.includes('호캉스')) {
+                foodPerPersonPerDay = 75000;
+            }
+
+            if (isEuropeOrUS) foodPerPersonPerDay = Math.round(foodPerPersonPerDay * 1.5);
+            else if (isSoutheastAsia) foodPerPersonPerDay = Math.round(foodPerPersonPerDay * 0.85);
+
+            const foodCost = companionCount * foodPerPersonPerDay * days;
+
+            // 9) 액티비티/투어/입장료(activityCost) 계산
+            let activityPerPersonPerDay = 20000;
+            if (selectedInterests.some(i => i.includes('테마파크') || i.includes('액티비티') || i.includes('체험') || i.includes('쇼핑'))) {
+                activityPerPersonPerDay = 38000;
+            } else if (selectedInterests.some(i => i.includes('힐링') || i.includes('자연') || i.includes('산책'))) {
+                activityPerPersonPerDay = 12000;
+            }
+            if (isOverseas) activityPerPersonPerDay = Math.round(activityPerPersonPerDay * 1.3);
+
+            const activityCost = companionCount * activityPerPersonPerDay * days;
+
+            // 10) 총액 합산
+            calculatedGrandTotal = stayCost + transportCost + foodCost + activityCost;
+            const perPersonCost = Math.round(calculatedGrandTotal / companionCount);
+
+            // 11) 모달 돔 업데이트
+            if (receiptDestName) receiptDestName.textContent = destination;
+            if (receiptSummaryChips) {
+                receiptSummaryChips.innerHTML = `
+                    <span class="receipt-chip">✈️ ${destination}</span>
+                    <span class="receipt-chip">📅 ${nights}박 ${days}일</span>
+                    <span class="receipt-chip">👥 ${companionCount}명 (${relation})</span>
+                    <span class="receipt-chip">🚗 ${transportation}</span>
+                    <span class="receipt-chip">🏨 ${accommodation}</span>
+                    <span class="receipt-chip">✨ ${promptType}</span>
+                `;
+            }
+
+            if (receiptNightsCount) receiptNightsCount.textContent = `${nights}박 기준`;
+            if (receiptPeopleCount) receiptPeopleCount.textContent = `${companionCount}인 기준`;
+            if (receiptStayCost) receiptStayCost.textContent = `${stayCost.toLocaleString()}원`;
+            if (receiptTransportCost) receiptTransportCost.textContent = `${transportCost.toLocaleString()}원`;
+            if (receiptFoodCost) receiptFoodCost.textContent = `${foodCost.toLocaleString()}원`;
+            if (receiptActivityCost) receiptActivityCost.textContent = `${activityCost.toLocaleString()}원`;
+            if (receiptTotalAmount) receiptTotalAmount.textContent = `${calculatedGrandTotal.toLocaleString()}원`;
+            if (receiptPerPerson) receiptPerPerson.textContent = `(1인당 약 ${perPersonCost.toLocaleString()}원)`;
+
+            // 모달 열기
+            if (estimateModal) {
+                estimateModal.style.display = 'flex';
+            }
+        });
+    }
+
+    // 모달 닫기
+    function closeEstimateModal() {
+        if (estimateModal) {
+            estimateModal.style.display = 'none';
+        }
+    }
+
+    if (closeEstimateBtn) {
+        closeEstimateBtn.addEventListener('click', closeEstimateModal);
+    }
+
+    if (estimateModal) {
+        estimateModal.addEventListener('click', (e) => {
+            if (e.target === estimateModal) {
+                closeEstimateModal();
+            }
+        });
+    }
+
+    // 12. [✨ 이 금액으로 예산 자동 적용하기] 클릭 이벤트
+    if (applyEstimateBudgetBtn) {
+        applyEstimateBudgetBtn.addEventListener('click', () => {
+            if (calculatedGrandTotal <= 0) {
+                closeEstimateModal();
+                return;
+            }
+
+            const totalManwon = Math.round(calculatedGrandTotal / 10000);
+            const availableBudgets = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300];
+
+            // 가장 차이가 적은 예산 옵션 매핑
+            let closest = availableBudgets[0];
+            let minDiff = Math.abs(totalManwon - closest);
+
+            for (const val of availableBudgets) {
+                const diff = Math.abs(totalManwon - val);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closest = val;
+                }
+            }
+
+            const matchedValue = `${closest}만원`;
+            if (budgetSelect) {
+                budgetSelect.value = matchedValue;
+                budgetSelect.focus();
+                budgetSelect.style.backgroundColor = '#fef3c7';
+                budgetSelect.style.borderColor = '#f59e0b';
+                setTimeout(() => {
+                    budgetSelect.style.backgroundColor = '#ffffff';
+                    budgetSelect.style.borderColor = '#e2e8f0';
+                }, 1000);
+            }
+
+            closeEstimateModal();
+        });
+    }
 
     // 헬퍼 함수들
     function setLoadingState(isLoading, titleText = '', descText = '') {

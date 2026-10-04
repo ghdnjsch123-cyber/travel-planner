@@ -11,10 +11,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="AI여행플래너">
     <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
-    <!-- 구글 폰트: Noto Sans KR -->
+    <!-- 구글 폰트: Noto Sans KR & 나눔스퀘어라운드 폰트 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquareRound@1.0/nanumsquareround.min.css">
     <!-- 메인 CSS 파일 연결 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- 마크다운 렌더링 라이브러리 (Marked.js CDN) -->
@@ -26,12 +27,12 @@
         <!-- 상단 헤더: 설레는 감성 여행 보딩패스 스타일 타이틀 바 -->
         <header class="app-header">
             <div class="header-title-wrap">
-                <span class="boarding-badge">BOARDING PASS</span>
-                <h1>AI 여행 플래너</h1>
+                <span class="boarding-badge">✈️ BOARDING PASS</span>
+                <h1>AI 여행 플래너 🌍</h1>
                 <button type="button" id="pwa-install-btn" class="btn btn-install" title="홈 화면 또는 PC에 앱으로 설치">
-                    앱 설치
+                    📲 앱 설치
                 </button>
-                <a href="/logout" class="btn btn-logout" title="비밀번호 다시 잠그기">로그아웃</a>
+                <a href="/logout" class="btn btn-logout" title="비밀번호 다시 잠그기">🔒 로그아웃</a>
             </div>
         </header>
 
@@ -40,12 +41,12 @@
             <div class="ranking-card">
                 <div class="ranking-header">
                     <div class="ranking-title-group">
-                        <span class="ranking-badge">월간 트렌드</span>
-                        <span class="ranking-title">대한민국 여행객 인기 여행지 순위</span>
+                        <span class="ranking-badge">🔥 월간 트렌드</span>
+                        <span class="ranking-title">대한민국 여행객 인기 여행지 순위 🏆</span>
                     </div>
                     <div class="ranking-tabs">
-                        <button type="button" class="ranking-tab-btn active" data-tab="domestic">국내 인기 TOP 5</button>
-                        <button type="button" class="ranking-tab-btn" data-tab="overseas">해외 인기 TOP 5</button>
+                        <button type="button" class="ranking-tab-btn active" data-tab="domestic">🇰🇷 국내 인기 TOP 5</button>
+                        <button type="button" class="ranking-tab-btn" data-tab="overseas">🌏 해외 인기 TOP 5</button>
                     </div>
                 </div>
 
@@ -105,23 +106,23 @@
             <section class="form-section" id="form-section">
                 <div class="card form-card">
                     <div class="form-title-bar">
-                        <h2 class="section-title">여행 조건 설정</h2>
+                        <h2 class="section-title">✨ 여행 조건 설정</h2>
                         <!-- 랜덤 여행플랜 짜기 버튼 -->
                         <button type="button" id="random-plan-btn" class="btn btn-random" title="전체 조건(인기/비인기 포함)을 무작위로 자동 설정합니다">
-                            랜덤 여행플랜 짜기
+                            🎲 랜덤 여행플랜 짜기
                         </button>
                     </div>
 
                     <form id="travel-form" novalidate>
                         <!-- 1. 여행지 -->
                         <div class="form-group">
-                            <label for="destination">1. 여행지 <span class="required">*</span></label>
+                            <label for="destination">1. 여행지 📍 <span class="required">*</span></label>
                             <input type="text" id="destination" name="destination" placeholder="예: 제주도, 남해, 단양, 프라하, 발리 (상단 순위 또는 랜덤 클릭)" required>
                         </div>
 
                         <!-- 2. 여행 기간 (시작일 & 종료일 선택) -->
                         <div class="form-group">
-                            <label>2. 여행 기간 <span class="required">*</span></label>
+                            <label>2. 여행 기간 🗓️ <span class="required">*</span></label>
                             <div class="date-picker-group">
                                 <div class="date-input-wrap">
                                     <span class="date-label">시작일</span>
@@ -136,9 +137,14 @@
                             <div id="duration-calc-badge" class="calc-badge">날짜를 선택해 주세요.</div>
                         </div>
 
-                        <!-- 3. 총 여행 예산 (여행인원 전체 기준) -->
+                        <!-- 3. 총 여행 예산 (여행인원 전체 기준) & 이정도면 얼마지? 버튼 -->
                         <div class="form-group">
-                            <label for="budget">3. 총 여행 예산 (전체 인원 기준) <span class="required">*</span></label>
+                            <div class="budget-header-wrap">
+                                <label for="budget">3. 총 여행 예산 💰 (전체 인원 기준) <span class="required">*</span></label>
+                                <button type="button" id="calc-estimate-btn" class="btn btn-estimate" title="다른 조건들을 모두 고른 후 누르시면 현실적인 예상 경비를 계산해 드려요!">
+                                    💸 이정도면 얼마지?
+                                </button>
+                            </div>
                             <select id="budget" name="budget" class="select-styled" required>
                                 <option value="" disabled selected>전체 예산을 선택해 주세요</option>
                                 <option value="10만원">10만원</option>
@@ -217,7 +223,7 @@
 
                         <!-- 5. 여행 인원 (슬라이더 바) & 관계 (버튼 선택) -->
                         <div class="form-group">
-                            <label class="label-heading">5. 여행 인원 <span class="required">*</span></label>
+                            <label class="label-heading">5. 여행 인원 👥 <span class="required">*</span></label>
                             <div class="range-group">
                                 <input type="range" id="companion-count" min="1" max="10" value="2" class="range-styled">
                                 <div class="range-display">
@@ -228,74 +234,74 @@
                             <div class="relation-group" style="margin-top: 10px;">
                                 <span class="sub-label">동행 관계:</span>
                                 <div class="btn-group-toggle" id="relation-btn-group">
-                                    <button type="button" class="choice-btn" data-relation="혼자 (나홀로)">혼자</button>
-                                    <button type="button" class="choice-btn active" data-relation="친구">친구</button>
-                                    <button type="button" class="choice-btn" data-relation="연인·커플">연인</button>
-                                    <button type="button" class="choice-btn" data-relation="부모님과 함께">부모님</button>
-                                    <button type="button" class="choice-btn" data-relation="아이 동반 가족">가족</button>
-                                    <button type="button" class="choice-btn" data-relation="단체·모임">단체</button>
+                                    <button type="button" class="choice-btn" data-relation="혼자 (나홀로)">혼자 👤</button>
+                                    <button type="button" class="choice-btn active" data-relation="친구">친구 👫</button>
+                                    <button type="button" class="choice-btn" data-relation="연인·커플">연인 💑</button>
+                                    <button type="button" class="choice-btn" data-relation="부모님과 함께">부모님 👨‍👩‍👦</button>
+                                    <button type="button" class="choice-btn" data-relation="아이 동반 가족">가족 👨‍👩‍👧‍👦</button>
+                                    <button type="button" class="choice-btn" data-relation="단체·모임">단체 👥</button>
                                 </div>
                             </div>
                         </div>
 
                         <!-- 6. 선호 이동수단 (버튼 형식) -->
                         <div class="form-group">
-                            <label class="label-heading">6. 선호 이동수단 <span class="required">*</span></label>
+                            <label class="label-heading">6. 선호 이동수단 🚗 <span class="required">*</span></label>
                             <div class="btn-group-toggle" id="transport-btn-group">
-                                <button type="button" class="choice-btn active" data-val="대중교통 (지하철·버스)">대중교통</button>
-                                <button type="button" class="choice-btn" data-val="렌터카·자차 운전">렌터카·자차</button>
-                                <button type="button" class="choice-btn" data-val="도보 중심 이동">도보 중심</button>
-                                <button type="button" class="choice-btn" data-val="택시 및 투어">택시·투어</button>
+                                <button type="button" class="choice-btn active" data-val="대중교통 (지하철·버스)">대중교통 🚇</button>
+                                <button type="button" class="choice-btn" data-val="렌터카·자차 운전">렌터카·자차 🚗</button>
+                                <button type="button" class="choice-btn" data-val="도보 중심 이동">도보 중심 👟</button>
+                                <button type="button" class="choice-btn" data-val="택시 및 투어">택시·투어 🚕</button>
                             </div>
                         </div>
 
                         <!-- 7. 숙소 선호 스타일 (노숙, 무박·밤샘 버튼 포함) -->
                         <div class="form-group">
-                            <label class="label-heading">7. 숙소 선호 스타일 <span class="required">*</span></label>
+                            <label class="label-heading">7. 숙소 선호 스타일 🏨 <span class="required">*</span></label>
                             <div class="btn-group-toggle" id="lodging-btn-group">
-                                <button type="button" class="choice-btn active" data-val="가성비 호텔·비즈니스 호텔">가성비 호텔</button>
-                                <button type="button" class="choice-btn" data-val="감성 에어비앤비·독채 펜션">감성 숙소</button>
-                                <button type="button" class="choice-btn" data-val="고급 호텔·리조트 (호캉스)">호텔·리조트</button>
-                                <button type="button" class="choice-btn" data-val="전통 료칸·게스트하우스">료칸·게하</button>
-                                <button type="button" class="choice-btn" data-val="노숙 (차박·야외 캠핑)">노숙 (차박·야외)</button>
-                                <button type="button" class="choice-btn" data-val="무박·밤샘 (잠을 안 자는 일정)">무박·밤샘 (잠 안 잠)</button>
+                                <button type="button" class="choice-btn active" data-val="가성비 호텔·비즈니스 호텔">가성비 호텔 🏨</button>
+                                <button type="button" class="choice-btn" data-val="감성 에어비앤비·독채 펜션">감성 숙소 🏡</button>
+                                <button type="button" class="choice-btn" data-val="고급 호텔·리조트 (호캉스)">호텔·리조트 🏰</button>
+                                <button type="button" class="choice-btn" data-val="전통 료칸·게스트하우스">료칸·게하 🎎</button>
+                                <button type="button" class="choice-btn" data-val="노숙 (차박·야외 캠핑)">노숙 (차박·야외) ⛺</button>
+                                <button type="button" class="choice-btn" data-val="무박·밤샘 (잠을 안 자는 일정)">무박·밤샘 (잠 안 잠) 🌌</button>
                             </div>
                         </div>
 
                         <!-- 8. 여행 스타일 (추천 스타일 8종 버튼 선택) -->
                         <div class="form-group">
-                            <label class="label-heading">8. 여행 스타일 <span class="required">*</span> (추천 스타일 8선)</label>
+                            <label class="label-heading">8. 여행 스타일 🎒 <span class="required">*</span> (추천 스타일 8선)</label>
                             <div class="style-choice-grid" id="style-choice-group">
                                 <button type="button" class="style-card-btn active" data-style="알찬 핵심 코스 (필수 랜드마크 & 효율적 동선 최적화)">
-                                    <strong>알찬 핵심 코스</strong>
+                                    <strong>🏃 알찬 핵심 코스</strong>
                                     <span>필수 랜드마크 & 동선 최적화</span>
                                 </button>
                                 <button type="button" class="style-card-btn" data-style="여유 힐링 코스 (느긋한 휴식과 감성 산책 중심)">
-                                    <strong>여유 힐링 코스</strong>
+                                    <strong>🌿 여유 힐링 코스</strong>
                                     <span>느긋한 휴식과 감성 산책</span>
                                 </button>
                                 <button type="button" class="style-card-btn" data-style="미식 도장깨기 (유명 대표 맛집 & 카페 투어 중심)">
-                                    <strong>미식 도장깨기</strong>
+                                    <strong>🍜 미식 도장깨기</strong>
                                     <span>유명 맛집 & 카페 투어</span>
                                 </button>
                                 <button type="button" class="style-card-btn" data-style="인생샷 사진 투어 (SNS 핫플 & 풍경 포토스팟 중심)">
-                                    <strong>인생샷 사진 투어</strong>
+                                    <strong>📸 인생샷 사진 투어</strong>
                                     <span>SNS 핫플 & 포토스팟</span>
                                 </button>
                                 <button type="button" class="style-card-btn" data-style="가성비 뚜벅이 (대중교통 & 합리적인 소비 중심)">
-                                    <strong>가성비 뚜벅이</strong>
+                                    <strong>👟 가성비 뚜벅이</strong>
                                     <span>대중교통 & 합리적 알뜰 여행</span>
                                 </button>
                                 <button type="button" class="style-card-btn" data-style="익스트림 액티비티 (레저, 서핑, 스포츠, 테마파크)">
-                                    <strong>익스트림 액티비티</strong>
+                                    <strong>🏄 익스트림 액티비티</strong>
                                     <span>레저, 스포츠, 테마파크</span>
                                 </button>
                                 <button type="button" class="style-card-btn" data-style="로컬 골목 탐방 (현지인 일상 & 숨은 명소 중심)">
-                                    <strong>로컬 골목 탐방</strong>
+                                    <strong>🏘️ 로컬 골목 탐방</strong>
                                     <span>현지인 일상 & 숨은 골목길</span>
                                 </button>
                                 <button type="button" class="style-card-btn" data-style="밤도깨비 올나잇 (화려한 야경, 야시장 & 나이트라이프)">
-                                    <strong>밤도깨비 올나잇</strong>
+                                    <strong>🌙 밤도깨비 올나잇</strong>
                                     <span>야경, 야시장 & 밤샘 즐길거리</span>
                                 </button>
                             </div>
@@ -306,7 +312,7 @@
 
                         <!-- 제출 버튼 -->
                         <button type="submit" id="submit-btn" class="btn btn-primary">
-                            <span class="btn-text">설레는 맞춤 일정 생성하기</span>
+                            <span class="btn-text">🚀 설레는 맞춤 일정 생성하기</span>
                             <span class="spinner" style="display: none;"></span>
                         </button>
                     </form>
@@ -319,15 +325,15 @@
                 <div class="card guide-panel-card" id="guide-panel-card">
                     <div class="guide-panel-header">
                         <div class="guide-header-left">
-                            <span class="guide-badge">EXPLORE & STAY</span>
+                            <span class="guide-badge">✨ EXPLORE & STAY</span>
                             <h3 id="facility-title">선택 여행지 주요 스팟 & 숙소·차량 가이드</h3>
                         </div>
                         <!-- 필터 탭 -->
                         <div class="spot-filter-tabs" id="spot-filter-tabs" style="display: none;">
-                            <button type="button" class="spot-tab active" data-filter="all">전체 (15+)</button>
-                            <button type="button" class="spot-tab" data-filter="stay">추천 숙소</button>
-                            <button type="button" class="spot-tab" data-filter="transport">차량·교통</button>
-                            <button type="button" class="spot-tab" data-filter="spot">주요 관광지</button>
+                            <button type="button" class="spot-tab active" data-filter="all">전체 (15+) 🌟</button>
+                            <button type="button" class="spot-tab" data-filter="stay">추천 숙소 🏨</button>
+                            <button type="button" class="spot-tab" data-filter="transport">차량·교통 🚗</button>
+                            <button type="button" class="spot-tab" data-filter="spot">주요 관광지 📸</button>
                         </div>
                     </div>
 
@@ -408,6 +414,60 @@
             </div>
             <div class="modal-footer">
                 <button type="button" id="confirm-modal-btn" class="btn btn-primary btn-sm">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 예상 여행 경비 계산서 모달 (이정도면 얼마지?) -->
+    <div id="estimate-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card receipt-card">
+            <div class="modal-header receipt-header">
+                <div class="receipt-header-title">
+                    <span class="receipt-icon">💸</span>
+                    <h3>맞춤 예상 여행 경비 계산서</h3>
+                </div>
+                <button type="button" id="close-estimate-btn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body receipt-body">
+                <div class="receipt-dest-badge" id="receipt-dest-name">✈️ 제주도 여행</div>
+                <div class="receipt-summary-chips" id="receipt-summary-chips">
+                    <span>🗓️ 2박 3일</span>
+                    <span>👥 2명</span>
+                    <span>🏨 가성비 호텔</span>
+                </div>
+
+                <div class="receipt-items-list">
+                    <div class="receipt-row">
+                        <span class="receipt-label">🏨 숙박비 (<span id="receipt-nights-count">2</span>박)</span>
+                        <strong class="receipt-val" id="receipt-stay-cost">약 18만 원</strong>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">🚗 교통 및 이동 (<span id="receipt-people-count">2</span>인)</span>
+                        <strong class="receipt-val" id="receipt-transport-cost">약 14만 원</strong>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">🍽️ 식비 및 카페 맛집</span>
+                        <strong class="receipt-val" id="receipt-food-cost">약 24만 원</strong>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">🎟️ 관광·체험·입장료</span>
+                        <strong class="receipt-val" id="receipt-activity-cost">약 6만 원</strong>
+                    </div>
+                    <div class="receipt-divider"></div>
+                    <div class="receipt-total-row">
+                        <div class="total-text-group">
+                            <span class="total-main-label">총 예상 경비</span>
+                            <span class="total-per-person" id="receipt-per-person">(1인당 약 31만 원)</span>
+                        </div>
+                        <span class="total-amount" id="receipt-total-amount">약 62만 원</span>
+                    </div>
+                </div>
+                <p class="receipt-notice">※ 선택하신 일정, 인원, 숙소 및 이동 스타일에 따른 합리적 추산치입니다.</p>
+            </div>
+            <div class="modal-footer receipt-footer">
+                <button type="button" id="apply-estimate-budget-btn" class="btn btn-apply-budget">
+                    ✨ 이 금액으로 예산 자동 적용하기
+                </button>
             </div>
         </div>
     </div>
