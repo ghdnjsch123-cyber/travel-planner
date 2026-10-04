@@ -385,17 +385,41 @@ body {
     backdrop-filter: blur(12px);
 }
 
-.section-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #0f172a;
-    letter-spacing: -0.3px;
-    margin-bottom: 22px;
+.form-title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
 }
 
-/* 6. 입력 폼 */
+.form-title-bar .section-title {
+    margin-bottom: 0;
+}
+
+/* 랜덤 여행플랜 버튼 */
+.btn-random {
+    background-color: #4f46e5;
+    color: #ffffff;
+    border: none;
+    padding: 7px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+    transition: all 0.2s ease;
+}
+
+.btn-random:hover {
+    background-color: #4338ca;
+    transform: translateY(-1px);
+}
+
+/* 6. 입력 폼 컴포넌트 */
 .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
 .form-group label,
@@ -404,7 +428,7 @@ body {
     font-size: 0.9rem;
     font-weight: 600;
     color: #1e293b;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
 .required {
@@ -412,9 +436,10 @@ body {
 }
 
 input[type="text"],
-textarea {
+input[type="date"],
+.select-styled {
     width: 100%;
-    padding: 11px 14px;
+    padding: 10px 14px;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
     font-size: 0.93rem;
@@ -425,61 +450,252 @@ textarea {
 }
 
 input[type="text"]:focus,
-textarea:focus {
+input[type="date"]:focus,
+.select-styled:focus {
     outline: none;
     border-color: var(--border-focus);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-textarea {
-    resize: vertical;
-}
-
-/* 7. 라디오 선택 그룹 */
-.radio-group {
+/* 날짜 선택기 그룹 */
+.date-picker-group {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 8px;
 }
 
-.radio-card {
+.date-input-wrap {
+    flex: 1;
     display: flex;
-    align-items: flex-start;
-    padding: 12px 14px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
+    flex-direction: column;
+    gap: 4px;
+}
+
+.date-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.date-separator {
+    color: #94a3b8;
+    font-weight: 600;
+    margin-top: 18px;
+}
+
+.calc-badge {
+    display: inline-block;
+    background-color: #eff6ff;
+    color: var(--primary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+/* 예산 셀렉트박스 */
+.select-styled {
     cursor: pointer;
-    background-color: #ffffff;
+    appearance: auto;
+}
+
+/* 관심사 대주제 탭 버튼 */
+.interest-categories {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.category-btn {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
     transition: all 0.15s ease;
 }
 
-.radio-card:hover {
+.category-btn.active {
+    background-color: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+}
+
+/* 세부 항목 버튼 그룹 */
+.sub-interest-container {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    min-height: 80px;
+}
+
+.sub-interest-group {
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.sub-interest-group.active {
+    display: flex;
+}
+
+.chip-btn {
+    background-color: #ffffff;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.chip-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.chip-btn.active {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+    font-weight: 600;
+}
+
+.selected-summary-wrap {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+    color: var(--text-muted);
+}
+
+.summary-label {
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.summary-text {
+    color: #1e40af;
+    font-weight: 500;
+}
+
+/* 인원 슬라이더 및 관계 */
+.range-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.range-styled {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: #cbd5e1;
+    outline: none;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.count-badge {
+    background-color: #1e40af;
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    min-width: 46px;
+    text-align: center;
+}
+
+.sub-label {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+/* 공통 버튼형 토글 그룹 (이동수단, 숙소, 관계) */
+.btn-group-toggle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.choice-btn {
+    background-color: #ffffff;
+    color: #334155;
+    border: 1px solid var(--border-color);
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.choice-btn:hover {
     border-color: #94a3b8;
     background-color: #f8fafc;
 }
 
-.radio-card input[type="radio"] {
-    margin-top: 3px;
-    margin-right: 10px;
-    accent-color: var(--primary);
+.choice-btn.active {
+    background-color: #eff6ff;
+    color: var(--primary);
+    border-color: var(--primary);
+    font-weight: 700;
+    box-shadow: 0 0 0 1px var(--primary);
 }
 
-.radio-content strong {
-    display: block;
-    font-size: 0.92rem;
+/* 여행 스타일 선택 카드 버튼 */
+.style-choice-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.style-card-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 16px;
+    background-color: #ffffff;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+}
+
+.style-card-btn strong {
+    font-size: 0.95rem;
     color: #0f172a;
     margin-bottom: 2px;
 }
 
-.radio-content span {
-    display: block;
-    font-size: 0.8rem;
+.style-card-btn span {
+    font-size: 0.82rem;
     color: var(--text-muted);
 }
 
-.radio-card:has(input[type="radio"]:checked) {
+.style-card-btn:hover {
+    border-color: #94a3b8;
+    background-color: #f8fafc;
+}
+
+.style-card-btn.active {
     border-color: var(--primary);
     background-color: #f0f7ff;
+    box-shadow: 0 0 0 1px var(--primary);
 }
 
 /* 8. 버튼 */

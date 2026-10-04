@@ -103,68 +103,172 @@
             <!-- 1. 좌측: 여행 정보 입력 폼 -->
             <section class="form-section">
                 <div class="card">
-                    <h2 class="section-title">여행 조건 설정</h2>
+                    <div class="form-title-bar">
+                        <h2 class="section-title">여행 조건 설정</h2>
+                        <!-- 랜덤 여행플랜 짜기 버튼 -->
+                        <button type="button" id="random-plan-btn" class="btn btn-random" title="조건을 무작위로 자동 설정합니다">
+                            랜덤 여행플랜 짜기
+                        </button>
+                    </div>
+
                     <form id="travel-form" novalidate>
                         <!-- 1. 여행지 -->
                         <div class="form-group">
                             <label for="destination">1. 여행지 <span class="required">*</span></label>
-                            <input type="text" id="destination" name="destination" placeholder="예: 일본 오사카 & 교토, 제주도, 파리" required>
+                            <input type="text" id="destination" name="destination" placeholder="예: 제주도, 오사카, 부산, 다낭 (상단 순위 클릭 가능)" required>
                         </div>
 
-                        <!-- 2. 여행 기간 -->
+                        <!-- 2. 여행 기간 (시작일 & 종료일 선택) -->
                         <div class="form-group">
-                            <label for="duration">2. 여행 기간 <span class="required">*</span></label>
-                            <input type="text" id="duration" name="duration" placeholder="예: 3박 4일, 10월 3일 ~ 10월 6일" required>
+                            <label>2. 여행 기간 <span class="required">*</span></label>
+                            <div class="date-picker-group">
+                                <div class="date-input-wrap">
+                                    <span class="date-label">시작일</span>
+                                    <input type="date" id="start-date" required>
+                                </div>
+                                <span class="date-separator">~</span>
+                                <div class="date-input-wrap">
+                                    <span class="date-label">종료일</span>
+                                    <input type="date" id="end-date" required>
+                                </div>
+                            </div>
+                            <div id="duration-calc-badge" class="calc-badge">날짜를 선택해 주세요.</div>
                         </div>
 
-                        <!-- 3. 예산 -->
+                        <!-- 3. 여행 예산 (10만원 단위 ~ 100만원, 이후 50만원 단위 ~ 최대 300만원) -->
                         <div class="form-group">
-                            <label for="budget">3. 여행 예산 <span class="required">*</span></label>
-                            <input type="text" id="budget" name="budget" placeholder="예: 1인당 100만원 선, 가성비 위주, 넉넉한 럭셔리" required>
+                            <label for="budget">3. 여행 예산 (1인 기준) <span class="required">*</span></label>
+                            <select id="budget" name="budget" class="select-styled" required>
+                                <option value="" disabled selected>예산을 선택해 주세요</option>
+                                <option value="10만원">10만원</option>
+                                <option value="20만원">20만원</option>
+                                <option value="30만원">30만원</option>
+                                <option value="40만원">40만원</option>
+                                <option value="50만원">50만원</option>
+                                <option value="60만원">60만원</option>
+                                <option value="70만원">70만원</option>
+                                <option value="80만원">80만원</option>
+                                <option value="90만원">90만원</option>
+                                <option value="100만원">100만원</option>
+                                <option value="150만원">150만원</option>
+                                <option value="200만원">200만원</option>
+                                <option value="250만원">250만원</option>
+                                <option value="300만원">300만원</option>
+                            </select>
                         </div>
 
-                        <!-- 4. 관심사 및 선호 활동 -->
+                        <!-- 4. 관심사 및 선호 활동 (대주제 탭 + 세부항목 선택 버튼) -->
                         <div class="form-group">
-                            <label for="interests">4. 관심사 및 선호 활동 <span class="required">*</span></label>
-                            <textarea id="interests" name="interests" rows="3" placeholder="예: 유명 미식 탐방, 미술관/박물관 투어, 쇼핑, 카페 투어, 사진 명소" required></textarea>
+                            <label class="label-heading">4. 관심사 및 선호 활동 <span class="required">*</span> (복수 선택 가능)</label>
+                            <!-- 대주제 선택 버튼들 -->
+                            <div class="interest-categories">
+                                <button type="button" class="category-btn active" data-cat="food">미식·맛집</button>
+                                <button type="button" class="category-btn" data-cat="nature">자연·힐링</button>
+                                <button type="button" class="category-btn" data-cat="culture">문화·역사</button>
+                                <button type="button" class="category-btn" data-cat="activity">액티비티·쇼핑</button>
+                            </div>
+
+                            <!-- 세부 항목 버튼 영역 (대주제별 전환) -->
+                            <div class="sub-interest-container">
+                                <!-- 미식·맛집 -->
+                                <div class="sub-interest-group active" data-cat="food">
+                                    <button type="button" class="chip-btn" data-val="유명 대표 맛집">유명 대표 맛집</button>
+                                    <button type="button" class="chip-btn" data-val="현지 로컬 노포">현지 로컬 노포</button>
+                                    <button type="button" class="chip-btn" data-val="감성 카페 & 디저트">감성 카페 & 디저트</button>
+                                    <button type="button" class="chip-btn" data-val="야시장 & 길거리 음식">야시장 & 길거리 음식</button>
+                                    <button type="button" class="chip-btn" data-val="와인 & 주류 투어">와인 & 주류 투어</button>
+                                </div>
+                                <!-- 자연·힐링 -->
+                                <div class="sub-interest-group" data-cat="nature">
+                                    <button type="button" class="chip-btn" data-val="오션뷰 & 해변 산책">오션뷰 & 해변 산책</button>
+                                    <button type="button" class="chip-btn" data-val="숲길 & 피톤치드">숲길 & 피톤치드</button>
+                                    <button type="button" class="chip-btn" data-val="온천 & 스파">온천 & 스파</button>
+                                    <button type="button" class="chip-btn" data-val="등산 & 트레킹">등산 & 트레킹</button>
+                                    <button type="button" class="chip-btn" data-val="일몰 & 야경 감상">일몰 & 야경 감상</button>
+                                </div>
+                                <!-- 문화·역사 -->
+                                <div class="sub-interest-group" data-cat="culture">
+                                    <button type="button" class="chip-btn" data-val="유적지 & 역사 명소">유적지 & 역사 명소</button>
+                                    <button type="button" class="chip-btn" data-val="미술관 & 박물관">미술관 & 박물관</button>
+                                    <button type="button" class="chip-btn" data-val="전통시장 체험">전통시장 체험</button>
+                                    <button type="button" class="chip-btn" data-val="골목길 건축 탐방">골목길 건축 탐방</button>
+                                    <button type="button" class="chip-btn" data-val="지역 공연 & 축제">지역 공연 & 축제</button>
+                                </div>
+                                <!-- 액티비티·쇼핑 -->
+                                <div class="sub-interest-group" data-cat="activity">
+                                    <button type="button" class="chip-btn" data-val="해양 스포츠 & 서핑">해양 스포츠 & 서핑</button>
+                                    <button type="button" class="chip-btn" data-val="테마파크">테마파크</button>
+                                    <button type="button" class="chip-btn" data-val="쇼핑몰 & 아울렛">쇼핑몰 & 아울렛</button>
+                                    <button type="button" class="chip-btn" data-val="사진 명소 & 스냅">사진 명소 & 스냅</button>
+                                    <button type="button" class="chip-btn" data-val="캠핑 & 차박">캠핑 & 차박</button>
+                                </div>
+                            </div>
+                            <!-- 선택된 관심사 요약 태그 영역 -->
+                            <div class="selected-summary-wrap">
+                                <span class="summary-label">선택 항목:</span>
+                                <span id="selected-interests-text" class="summary-text">선택된 항목이 없습니다.</span>
+                            </div>
                         </div>
 
-                        <!-- 5. 동행자 -->
+                        <!-- 5. 여행 인원 (슬라이더 바) & 관계 (버튼 선택) -->
                         <div class="form-group">
-                            <label for="companions">5. 동행자 <span class="required">*</span></label>
-                            <input type="text" id="companions" name="companions" placeholder="예: 혼자, 친구 2명, 부모님과 함께, 아이 동반 가족" required>
+                            <label class="label-heading">5. 여행 인원 <span class="required">*</span></label>
+                            <!-- 인원 슬라이더 바 -->
+                            <div class="range-group">
+                                <input type="range" id="companion-count" min="1" max="10" value="2" class="range-styled">
+                                <div class="range-display">
+                                    <span id="companion-count-badge" class="count-badge">2명</span>
+                                </div>
+                            </div>
+
+                            <!-- 인원과의 관계 버튼 선택 -->
+                            <div class="relation-group" style="margin-top: 10px;">
+                                <span class="sub-label">동행 관계:</span>
+                                <div class="btn-group-toggle" id="relation-btn-group">
+                                    <button type="button" class="choice-btn" data-relation="혼자 (나홀로)">혼자</button>
+                                    <button type="button" class="choice-btn active" data-relation="친구">친구</button>
+                                    <button type="button" class="choice-btn" data-relation="연인·커플">연인</button>
+                                    <button type="button" class="choice-btn" data-relation="부모님과 함께">부모님</button>
+                                    <button type="button" class="choice-btn" data-relation="아이 동반 가족">가족</button>
+                                    <button type="button" class="choice-btn" data-relation="단체·모임">단체</button>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- 6. 이동수단 -->
+                        <!-- 6. 선호 이동수단 (버튼 형식) -->
                         <div class="form-group">
-                            <label for="transportation">6. 선호 이동수단 <span class="required">*</span></label>
-                            <input type="text" id="transportation" name="transportation" placeholder="예: 지하철 및 대중교통, 렌터카, 도보 위주" required>
+                            <label class="label-heading">6. 선호 이동수단 <span class="required">*</span></label>
+                            <div class="btn-group-toggle" id="transport-btn-group">
+                                <button type="button" class="choice-btn active" data-val="대중교통 (지하철·버스)">대중교통</button>
+                                <button type="button" class="choice-btn" data-val="렌터카·자차 운전">렌터카·자차</button>
+                                <button type="button" class="choice-btn" data-val="도보 중심 이동">도보 중심</button>
+                                <button type="button" class="choice-btn" data-val="택시 및 투어">택시·투어</button>
+                            </div>
                         </div>
 
-                        <!-- 7. 숙소 선호 -->
+                        <!-- 7. 숙소 선호 스타일 (버튼 형식) -->
                         <div class="form-group">
-                            <label for="accommodation">7. 숙소 선호 스타일 <span class="required">*</span></label>
-                            <input type="text" id="accommodation" name="accommodation" placeholder="예: 가성비 비즈니스 호텔, 료칸/온천, 감성 에어비앤비, 리조트" required>
+                            <label class="label-heading">7. 숙소 선호 스타일 <span class="required">*</span></label>
+                            <div class="btn-group-toggle" id="lodging-btn-group">
+                                <button type="button" class="choice-btn active" data-val="가성비 호텔·비즈니스 호텔">가성비 호텔</button>
+                                <button type="button" class="choice-btn" data-val="감성 에어비앤비·독채 펜션">감성 숙소</button>
+                                <button type="button" class="choice-btn" data-val="고급 호텔·리조트 (호캉스)">호텔·리조트</button>
+                                <button type="button" class="choice-btn" data-val="전통 료칸·게스트하우스">료칸·게하</button>
+                            </div>
                         </div>
 
-                        <!-- 8. 기획 모드 선택 (Prompt A vs Prompt B) -->
+                        <!-- 8. 여행 스타일 (알찬 표준 코스 vs 여유 로컬 감성 코스 버튼 형식) -->
                         <div class="form-group">
-                            <label class="label-heading">8. 플래닝 스타일 선택 <span class="required">*</span></label>
-                            <div class="radio-group">
-                                <label class="radio-card">
-                                    <input type="radio" name="prompt_type" value="A" checked>
-                                    <div class="radio-content">
-                                        <strong>Prompt A (알찬 표준 코스)</strong>
-                                        <span>핵심 랜드마크, 최적의 이동 동선과 효율적인 일정 중심</span>
-                                    </div>
-                                </label>
-                                <label class="radio-card">
-                                    <input type="radio" name="prompt_type" value="B">
-                                    <div class="radio-content">
-                                        <strong>Prompt B (현지 로컬 감성 코스)</strong>
-                                        <span>숨은 골목길, 현지인 맛집, 여유로운 힐링 체험 중심</span>
-                                    </div>
-                                </label>
+                            <label class="label-heading">8. 여행 스타일 <span class="required">*</span></label>
+                            <div class="style-choice-group" id="style-choice-group">
+                                <button type="button" class="style-card-btn active" data-style="A">
+                                    <strong>알찬 표준 코스</strong>
+                                    <span>핵심 랜드마크 방문 및 최적의 이동 동선 중심</span>
+                                </button>
+                                <button type="button" class="style-card-btn" data-style="B">
+                                    <strong>여유 로컬 감성 코스</strong>
+                                    <span>숨은 골목 명소, 현지인 맛집 및 여유로운 힐링 중심</span>
+                                </button>
                             </div>
                         </div>
 
