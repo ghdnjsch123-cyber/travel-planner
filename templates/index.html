@@ -14,7 +14,7 @@
     <!-- 구글 폰트: Noto Sans KR -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- 메인 CSS 파일 연결 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- 마크다운 렌더링 라이브러리 (Marked.js CDN) -->
@@ -23,9 +23,10 @@
 <body>
     <div class="background-overlay"></div>
     <div class="app-container">
-        <!-- 상단 헤더 -->
+        <!-- 상단 헤더: 설레는 감성 여행 보딩패스 스타일 타이틀 바 -->
         <header class="app-header">
             <div class="header-title-wrap">
+                <span class="boarding-badge">BOARDING PASS</span>
                 <h1>AI 여행 플래너</h1>
                 <button type="button" id="pwa-install-btn" class="btn btn-install" title="홈 화면 또는 PC에 앱으로 설치">
                     앱 설치
@@ -39,7 +40,7 @@
             <div class="ranking-card">
                 <div class="ranking-header">
                     <div class="ranking-title-group">
-                        <span class="ranking-badge">월간 순위</span>
+                        <span class="ranking-badge">월간 트렌드</span>
                         <span class="ranking-title">대한민국 여행객 인기 여행지 순위</span>
                     </div>
                     <div class="ranking-tabs">
@@ -102,7 +103,7 @@
         <main class="main-layout" id="main-layout">
             <!-- 1. 좌측: 여행 조건 입력 폼 (비율 1) -->
             <section class="form-section" id="form-section">
-                <div class="card">
+                <div class="card form-card">
                     <div class="form-title-bar">
                         <h2 class="section-title">여행 조건 설정</h2>
                         <!-- 랜덤 여행플랜 짜기 버튼 -->
@@ -305,42 +306,42 @@
 
                         <!-- 제출 버튼 -->
                         <button type="submit" id="submit-btn" class="btn btn-primary">
-                            <span class="btn-text">여행 일정 생성하기</span>
+                            <span class="btn-text">설레는 맞춤 일정 생성하기</span>
                             <span class="spinner" style="display: none;"></span>
                         </button>
                     </form>
                 </div>
             </section>
 
-            <!-- 2. 우측: 안내 카드 및 생성된 여행 일정표 영역 (비율 1.5) -->
+            <!-- 2. 우측: 설레는 감성 안내 카드(15선 이상 실제 스팟) 및 생성된 여행 일정표 (비율 1.5) -->
             <section class="right-panel-section" id="right-panel">
-                <!-- 2-1. 상단 안내 카드 (여행지 선택/랜덤 시 실시간 표시, 1.5배 넓은 공간 활용) -->
+                <!-- 2-1. 상단 안내 카드 (실제 숙소/차량/관광지 15선 이상 시각적 갤러리) -->
                 <div class="card guide-panel-card" id="guide-panel-card">
                     <div class="guide-panel-header">
-                        <span class="guide-badge">여행지 가이드</span>
-                        <h3 id="facility-title">선택 여행지 거점 및 편의시설 가이드</h3>
+                        <div class="guide-header-left">
+                            <span class="guide-badge">EXPLORE & STAY</span>
+                            <h3 id="facility-title">선택 여행지 주요 스팟 & 숙소·차량 가이드</h3>
+                        </div>
+                        <!-- 필터 탭 -->
+                        <div class="spot-filter-tabs" id="spot-filter-tabs" style="display: none;">
+                            <button type="button" class="spot-tab active" data-filter="all">전체 (15+)</button>
+                            <button type="button" class="spot-tab" data-filter="stay">추천 숙소</button>
+                            <button type="button" class="spot-tab" data-filter="transport">차량·교통</button>
+                            <button type="button" class="spot-tab" data-filter="spot">주요 관광지</button>
+                        </div>
                     </div>
 
                     <!-- 안내 카드 대기 기본 문구 -->
                     <div id="guide-placeholder" class="guide-placeholder-box">
-                        <p>상단의 <strong>인기 순위 여행지</strong>를 클릭하거나 <strong>[랜덤 여행플랜 짜기]</strong>를 누르시면, 해당 여행지의 추천 거점 숙소, 교통 및 주요 시설 정보가 이곳에 실시간으로 표시됩니다.</p>
+                        <div class="placeholder-compass-icon">✈</div>
+                        <h4>어디로 떠나고 싶으신가요?</h4>
+                        <p>상단의 <strong>인기 순위 여행지</strong>를 클릭하거나 <strong>[랜덤 여행플랜 짜기]</strong>를 누르시면,<br>해당 여행지의 <strong>실제 숙소, 렌트카/교통, 필수 명소 15곳 이상의 사진과 금액 정보</strong>가 이곳에 생생하게 펼쳐집니다.</p>
                     </div>
 
-                    <!-- 실제 여행지 정보 표시 박스 -->
+                    <!-- 실제 여행지 스팟 15선 이상 갤러리 그리드 -->
                     <div id="guide-content-box" class="guide-content-box" style="display: none;">
-                        <div class="facility-grid">
-                            <div class="facility-item">
-                                <span class="facility-badge">추천 숙소 거점</span>
-                                <p id="facility-lodging">-</p>
-                            </div>
-                            <div class="facility-item">
-                                <span class="facility-badge">차량 및 이동 팁</span>
-                                <p id="facility-transport">-</p>
-                            </div>
-                            <div class="facility-item">
-                                <span class="facility-badge">주요 관문 & 편의시설</span>
-                                <p id="facility-main">-</p>
-                            </div>
+                        <div class="spot-cards-grid" id="spot-cards-grid">
+                            <!-- JS에서 15개 이상의 실제 스팟 카드가 동적으로 주입됩니다 -->
                         </div>
                     </div>
                 </div>

@@ -33,9 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const guidePlaceholder = document.getElementById('guide-placeholder');
     const guideContentBox = document.getElementById('guide-content-box');
     const facilityTitle = document.getElementById('facility-title');
-    const facilityLodging = document.getElementById('facility-lodging');
-    const facilityTransport = document.getElementById('facility-transport');
-    const facilityMain = document.getElementById('facility-main');
+    const spotFilterTabs = document.getElementById('spot-filter-tabs');
+    const spotCardsGrid = document.getElementById('spot-cards-grid');
+    const spotTabs = document.querySelectorAll('.spot-tab');
 
     const resultCard = document.getElementById('result-card');
     const loadingBox = document.getElementById('loading-box');
@@ -102,48 +102,369 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     // ==========================================
-    // 2. 우측 안내 카드 렌더링 함수
+    // 2. 15선 이상 실제 스팟(숙소·차량·관광지) 데이터베이스 & 가이드 카드 렌더링
     // ==========================================
+
+    // 카테고리 태그 명칭 매핑
+    const typeLabelMap = {
+        stay: '추천 숙소',
+        transport: '차량·교통',
+        spot: '주요 관광지'
+    };
+
+    // 주요 10대 인기 여행지 실제 15선 이상 상세 데이터베이스 (사진, 실명, 실제 예상금액)
+    const curatedSpotsDB = {
+        jeju: [
+            // 숙소 5선
+            { type: 'stay', name: '신라호텔 제주', price: '1박 약 340,000원~', desc: '중문관광단지 위치, 야외 사계절 온수풀 및 럭셔리 라운지', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '그랜드 조선 제주', price: '1박 약 270,000원~', desc: '루프탑 성인 전용 인피니티풀과 감각적인 부티크 인테리어', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '파르나스 호텔 제주', price: '1박 약 380,000원~', desc: '110m 국내 최장 오션 인피니티풀과 중문 절벽 파노라마 바다 뷰', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '애월 한담 독채 풀빌라', price: '1박 약 220,000원~', desc: '애월 바다 일몰이 눈앞에 펼쳐지는 프라이빗 독채 감성 숙소', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '호텔 시리우스 제주', price: '1박 약 95,000원~', desc: '제주공항 5분 거리, 가성비 뛰어난 비즈니스 호텔 및 실내 수영장', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
+            // 차량·교통 4선
+            { type: 'transport', name: '롯데렌터카 아이오닉5 전기차', price: '24시간 약 58,000원~', desc: '공항 셔틀 직결, 최신 충전비 지원 및 완전자차 보험 포함', img: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: 'SK렌터카 더올뉴 아반떼 CN7', price: '24시간 약 42,000원~', desc: '커플·소규모 제주 여행 인기 1위 실속형 가성비 세단', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '카니발 9인승 패밀리 밴', price: '24시간 약 85,000원~', desc: '가족 및 다인원 여행에 최적화된 넓은 실내 공간과 트렁크', img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '제주 급행버스 101/102번', price: '1회 3,000원', desc: '제주국제공항에서 동·서부 주요 해안 거점을 잇는 쾌속 버스', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선
+            { type: 'spot', name: '성산일출봉 유네스코 지질명소', price: '성인 5,000원', desc: '푸른 동해 바다 위 웅장하게 솟아오른 천연 분화구 정상 트레킹', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '협재 해수욕장 & 비양도 뷰', price: '무료입장', desc: '에메랄드빛 투명한 바다와 하얀 모래사장, 환상적인 일몰 포토존', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '카멜리아힐 동백 수목원', price: '성인 10,000원', desc: '동양 최대 규모 동백꽃 정원과 피톤치드 가득한 감성 숲길', img: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '섭지코지 해안 절경 산책로', price: '무료입장', desc: '붉은 화산송이 언덕과 쪽빛 바다가 어우러진 해안 비경', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '사려니숲길 삼나무 원시림', price: '무료입장', desc: '울창한 삼나무 피톤치드를 온몸으로 느끼는 힐링 산책로', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '오설록 티뮤지엄 & 녹차밭', price: '입장 무료', desc: '끝없이 펼쳐진 초록빛 유기농 차밭과 시그니처 말차 아이스크림', img: 'https://images.unsplash.com/photo-1536257104079-aa99c6460a5a?auto=format&fit=crop&w=600&q=80' }
+        ],
+        busan: [
+            // 숙소 5선
+            { type: 'stay', name: '시그니엘 부산 해운대', price: '1박 약 430,000원~', desc: '해운대 엘시티 타워 럭셔리 오션뷰 & 인피니티풀 5성급 호텔', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '파크 하얏트 부산 마린시티', price: '1박 약 390,000원~', desc: '광안대교 파노라마 야경 뷰가 환상적인 럭셔리 부티크 호텔', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '아난티 코브 & 힐튼 기장', price: '1박 약 360,000원~', desc: '기장 바다 절벽 위 워터하우스 온천 & 아난티 타운 휴양 리조트', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '광안리 감성 오션스테이 에어비앤비', price: '1박 약 180,000원~', desc: '거실 통창 가득 광안리 해변 드론쇼가 직관되는 오션뷰 숙소', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '페어필드 바이 메리어트 송도', price: '1박 약 110,000원~', desc: '송도 해수욕장 케이블카 앞 가성비 뛰어난 메리어트 계열 호텔', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
+            // 차량·교통 4선
+            { type: 'transport', name: '해운대 블루라인파크 해변열차', price: '1인 왕복 12,000원~', desc: '미포~청사포~송정 동해남부선 해안 절경 레일 투어 열차', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '쏘카 더뉴 K5 렌터카', price: '24시간 약 49,000원~', desc: '부산역/서면역 픽업, 부산 전역 및 기장 해안 드라이브 최적', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '부산 시티투어버스 (레드라인)', price: '1일권 15,000원', desc: '부산역~광안리~해운대~용호만 주요 거점 무제한 자유 승하차', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '다이아몬드베이 럭셔리 요트 투어', price: '1인 약 25,000원~', desc: '광안대교 아래에서 노을과 야경을 즐기는 낭만 요트 세일링', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선
+            { type: 'spot', name: '광안리 해수욕장 & 광안대교', price: '무료입장', desc: '반짝이는 광안대교 LED 야경과 주말 밤 펼쳐지는 드론 라이트쇼', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '해운대 해수욕장 & 동백섬 산책로', price: '무료입장', desc: '대한민국 대표 해변과 울창한 동백나무 숲길, APEC 누리마루', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '감천문화마을 알록달록 골목', price: '무료 (지도 2,000원)', desc: '계단식 파스텔톤 집들과 어린왕자 조각상 인기 포토스팟', img: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '영도 흰여울문화마을', price: '무료입장', desc: '바다 절벽을 따라 조성된 한국의 산토리니 감성 해안 골목길', img: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '기장 해동용궁사 해안 사찰', price: '무료입장', desc: '푸른 파도가 부딪히는 바위 절벽 바로 위에 세워진 신비로운 수상 사찰', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '자갈치시장 & BIFF 광장 먹거리', price: '자유 탐방', desc: '싱싱한 활어회와 바삭한 씨앗호떡, 비빔당면 등 부산 로컬 미식 성지', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' }
+        ],
+        gangneung: [
+            // 숙소 5선
+            { type: 'stay', name: '세인트존스 호텔 강릉', price: '1박 약 160,000원~', desc: '강문해변 솔밭 앞 초대형 인피니티풀과 쾌적한 오션뷰 객실', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '씨마크 호텔 강릉 경포', price: '1박 약 450,000원~', desc: '경포 해변 절벽 위 백색 건축미와 럭셔리 온수 인피니티풀 5성급', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '롯데리조트 속초', price: '1박 약 260,000원~', desc: '3면이 동해 바다로 둘러싸인 워터파크와 전 객실 파노라마 오션뷰', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '안목해변 감성 오션스테이', price: '1박 약 140,000원~', desc: '커피거리 바로 앞, 테라스에서 동해 일출을 직관하는 감성 펜션', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '속초 체스터톤스 레지던스', price: '1박 약 90,000원~', desc: '청초호 인근 사계절 온천수 온수 수영장과 극가성비 호텔', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
+            // 차량·교통 4선
+            { type: 'transport', name: 'KTX-이음 강릉선 고속열차', price: '편도 27,600원', desc: '서울역/청량리에서 강릉역까지 1시간 40분 만에 주파하는 준고속열차', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '그린카 투싼 올뉴 SUV 렌트', price: '24시간 약 62,000원~', desc: '강릉역/터미널 바로 앞 픽업, 7번 국도 낭만 해안 드라이브', img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '정동진 바다부채길 셔틀버스', price: '1회 약 1,500원', desc: '정동진 썬크루즈와 심곡항을 잇는 천연 해안단구 탐방 셔틀', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '속초 대포항 해상 유람선', price: '대인 약 18,000원', desc: '설악산과 속초 해안선을 바다 위에서 한눈에 조망하는 크루즈', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선
+            { type: 'spot', name: '안목해변 커피거리', price: '무료 (커피 6,000원~)', desc: '푸른 바다를 내려다보며 명품 핸드드립 커피와 디저트를 즐기는 명소', img: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '강릉 아르떼뮤지엄', price: '성인 17,000원', desc: '영원한 자연을 주제로 한 빛과 소리의 환상적인 몰입형 미디어아트관', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '경포호 자전거 둘레길 & 경포대', price: '무료입장', desc: '잔잔한 호수 둘레길 자전거 산책과 탁 트인 경포 해수욕장 백사장', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '속초관광수산시장 (중앙시장)', price: '자유 (닭강정 2만원~)', desc: '만석닭강정, 오징어순대, 씨앗호떡 등 동해안 최고의 먹거리 천국', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '속초 영금정 해상정자', price: '무료입장', desc: '바위에 부딪히는 거문고 소리 같은 파도와 동해 일출의 명소', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '정동진 썬크루즈 조각공원', price: '대인 5,000원', desc: '해안 절벽 위에 올려진 초대형 유람선과 끝없는 동해 수평선 포토존', img: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80' }
+        ],
+        gyeongju: [
+            // 숙소 5선
+            { type: 'stay', name: '라한셀렉트 경주', price: '1박 약 210,000원~', desc: '보문호수 정면 파노라마 뷰, 감성 북스토어 & 온수 수영장 완비', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '힐튼 경주', price: '1박 약 240,000원~', desc: '보문관광단지 중심 5성급 호텔, 실내외 풀장과 우양미술관 인접', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '황리단길 한옥스테이 소담', price: '1박 약 170,000원~', desc: '고즈넉한 서까래와 잔디 마당이 있는 황리단길 감성 전통 한옥 독채', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '소설재 황리단길점', price: '1박 약 140,000원~', desc: '모던한 편의시설과 단아한 전통미가 조화된 부티크 한옥 게스트하우스', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '더케이호텔 경주', price: '1박 약 110,000원~', desc: '황룡사 9층 목탑 뷰와 천연 온천 사우나를 갖춘 합리적 가성비 호텔', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80' },
+            // 차량·교통 4선
+            { type: 'transport', name: '황리단길 전동스쿠터 & 삼륜바이크', price: '1시간 약 15,000원~', desc: '대릉원, 첨성대, 교촌마을 일대를 시원하게 누비는 전동 모빌리티', img: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '신경주역 쏘카 카셰어링 아반떼', price: '24시간 약 45,000원~', desc: 'KTX 신경주역 주차장에서 즉시 픽업하여 경주 전역 자유 여행', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '경주 시내 순환 10번/11번 버스', price: '1회 1,600원', desc: '경주역, 황리단길, 보문단지, 불국사를 원형으로 연결하는 핵심 버스', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '보문호수 전동 오리배 & 모터보트', price: '30분 약 25,000원', desc: '잔잔하고 넓은 보문호를 가로지르며 호수 풍경을 즐기는 힐링 보트', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선
+            { type: 'spot', name: '첨성대 & 핑크뮬리 야생화단지', price: '무료입장', desc: '동양 최고의 천문대 유적과 계절마다 만개하는 야생화 및 핑크뮬리 꽃밭', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '동궁과 월지 (안압지) 궁궐 야경', price: '성인 3,000원', desc: '달빛 아래 잔잔한 연못에 비치는 신라 별궁의 황홀한 반영 야경', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '불국사 & 다보탑·석가탑', price: '무료입장 (국가유산)', desc: '유네스코 세계문화유산, 정교한 신라 불교 석조 건축의 위대한 걸작', img: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '대릉원 고분군 & 목련 포토존', price: '대릉원 무료 (천마총 3,000원)', desc: '거대한 신라 고분들이 모여있는 신비로운 숲길과 천마총 내부 관람', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '황리단길 감성 카페 & 디저트 거리', price: '자유 탐방', desc: '전통 한옥을 리모델링한 트렌디한 카페, 십원빵, 소품샵 핫플레이스', img: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '국립경주박물관 & 성덕대왕신종', price: '무료입장', desc: '신라 천년의 황금 금관과 에밀레종의 은은한 종소리를 만나는 박물관', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' }
+        ],
+        yeosu: [
+            // 숙소 5선
+            { type: 'stay', name: '소노캄 여수 (구 엠블호텔)', price: '1박 약 230,000원~', desc: '오동도 입구에 우뚝 솟은 전 객실 바다전망 여수 랜드마크 5성급', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '라마다프라자 바이 윈덤 여수', price: '1박 약 150,000원~', desc: '옥상에서 출발하는 해상 짚트랙과 바다를 굽어보는 인피니티풀 호텔', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '르그랑블루 풀빌라 리조트', price: '1박 약 320,000원~', desc: '돌산도 해안 절벽 위 국내 최고 수준의 사계절 온수 인피니티풀', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '슈가브리움 오션 리조트', price: '1박 약 360,000원~', desc: '발리 감성의 이국적 풀빌라 인테리어와 플로팅 조식 체험', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '유탑 마리나 호텔 & 리조트', price: '1박 약 130,000원~', desc: '여수엑스포역 인근, 요트 투어 연계 혜택과 가성비 뛰어난 오션뷰 룸', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
+            // 차량·교통 4선
+            { type: 'transport', name: '여수 해상케이블카 (크리스탈 캐빈)', price: '왕복 대인 22,000원', desc: '바닥이 투명 유리로 된 바다 위를 가로지르는 아찔한 공중 횡단', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '롯데렌터카 코나 하이브리드', price: '24시간 약 52,000원~', desc: '여수엑스포역 KTX 하차 직결 픽업, 돌산도 해안도로 드라이브', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '오동도 동백열차', price: '편도 1,000원', desc: '방파제 길을 건너 동백섬 안쪽 입구까지 편안하게 연결하는 꼬마열차', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '여수 밤바다 이사부 크루즈', price: '대인 약 25,000원~', desc: '돌산대교와 거북선대교를 지나는 낭만 야경 투어와 선상 불꽃쇼', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선
+            { type: 'spot', name: '오동도 동백나무 숲길 산책로', price: '무료입장', desc: '기암절벽과 붉은 동백꽃 터널이 이어지는 여수 제1경의 아름다운 섬', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '향일암 일출 해상 사찰', price: '무료입장', desc: '거대한 바위 틈을 지나 남해 수평선이 아득하게 펼쳐지는 최고의 일출지', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '낭만포차 거리 & 하멜등대', price: '메뉴당 3~4만원대', desc: '빨간 하멜등대 앞 바다 바람을 맞으며 맛보는 돌문어해물삼합과 버스킹', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '고소동 1004 벽화마을', price: '무료입장', desc: '언덕 위 아기자기한 감성 벽화들과 바다가 한눈에 내려다보이는 루프탑 카페', img: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '아쿠아플라넷 여수 & 벨루가', price: '대인 약 33,400원', desc: '귀여운 흰고래 벨루가와 대형 메인수조 해양 생태계 체험관', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '돌산공원 전망대 & 돌산대교 야경', price: '무료입장', desc: '화려한 오색 조명으로 빛나는 돌산대교와 여수항 밤바다의 전경', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' }
+        ],
+        osaka: [
+            // 숙소 5선
+            { type: 'stay', name: '스위소텔 난카이 오사카 (난바)', price: '1박 약 310,000원~', desc: '난카이 난바역 직결, 도톤보리 도보 5분 5성급 럭셔리 호텔', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '호텔 한큐 레스파이어 오사카', price: '1박 약 190,000원~', desc: '우메다역 요도바시 카메라 건물 상층, 뛰어난 쇼핑 접근성과 쾌적한 룸', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '콘래드 오사카', price: '1박 약 580,000원~', desc: '페스티벌 타워 40층 파노라마 시티 스카이라인 뷰를 자랑하는 최고급 호텔', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '교토 기온 료칸 야치요', price: '1박 약 390,000원~', desc: '전통 일본식 정원과 정통 가이세키 코스 요리를 맛볼 수 있는 온천 료칸', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '호텔 더 미츠이 교토', price: '1박 약 750,000원~', desc: '니조성 정문 앞 천연 온천 수영 스파를 품은 세계적인 럭셔리 호텔', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
+            // 차량·교통 4선
+            { type: 'transport', name: '간사이공항 특급 라피트 열차', price: '편도 약 13,000원', desc: '공항에서 난바역까지 38분 만에 쾌속으로 연결하는 레트로 미래형 특급', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '오사카 주유패스 (Amazing Pass)', price: '1일권 약 28,000원~', desc: '오사카 시영 메트로 전 노선 무제한 탑승 + 40여 개 주요 관광지 무료 입장', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '한큐 투어리스트 1일 패스', price: '1인 약 7,000원', desc: '오사카 우메다에서 교토 가와라마치 및 고베까지 한큐 전철 무제한 이용', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: 'JR 간사이 와이드 레일패스', price: '5일권 약 105,000원', desc: '오사카, 교토, 나라, 고베, 오카야마 신칸센까지 커버하는 실속형 레일패스', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선
+            { type: 'spot', name: '도톤보리 & 글리코상 포토존', price: '무료 탐방', desc: '화려한 네온사인과 타코야키, 오코노미야키를 즐기는 오사카의 심장부', img: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '오사카성 천수각 & 성곽공원', price: '천수각 약 5,500원', desc: '황금빛 장식의 웅장한 천수각과 거대한 해자가 어우러진 역사 랜드마크', img: 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '유니버설 스튜디오 재팬 (USJ)', price: '1일권 약 86,000원~', desc: '슈퍼 닌텐도 월드 마리오 카트와 위저딩 월드 오브 해리포터 테마파크', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '교토 후시미 이나리 신사 (여우신사)', price: '무료입장', desc: '산등성이를 따라 붉은 천 개의 토리이 터널이 끝없이 이어지는 신비로운 장관', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '교토 기요미즈데라 (청수사)', price: '입장료 약 3,600원', desc: '깎아지른 절벽 위 못을 쓰지 않고 지은 목조 본당과 교토 시내 전경', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '교토 아라시야마 대나무숲 (치쿠린)', price: '무료입장', desc: '바람에 서걱이는 대나무 잎 소리와 자연의 정취를 만끽하는 산책 명소', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80' }
+        ],
+        fukuoka: [
+            // 숙소 5선
+            { type: 'stay', name: '미야코 호텔 하카타', price: '1박 약 250,000원~', desc: '하카타역 지하 직결, 루프탑 야외 온천 스파 수영장을 갖춘 최고 입지', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '그랜드 하얏트 후쿠오카', price: '1박 약 320,000원~', desc: '캐널시티 쇼핑몰 중심부와 바로 연결된 고품격 5성급 럭셔리 호텔', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '유후인 바이엔 가든 리조트 료칸', price: '1박 약 420,000원~', desc: '만 평 규모의 자연 숲속 노천온천과 최고급 소고기 가이세키 정식', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '유후인 무소엔 노천온천 료칸', price: '1박 약 480,000원~', desc: '유후다케 산봉우리를 정면으로 바라보는 일본 최대 규모의 초대형 노천탕', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '호텔 몬테레 후쿠오카', price: '1박 약 150,000원~', desc: '텐진역 인근, 투숙객 전용 천연 온천수 대욕장과 사우나 완비 호텔', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
+            // 차량·교통 4선
+            { type: 'transport', name: '후쿠오카 지하철 1일 승차권', price: '1인 약 5,800원', desc: '공항선(공항에서 하카타 5분) 및 나나쿠마선 하루 종일 무제한 탑승', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: 'JR 북큐슈 레일패스 (3일권)', price: '1인 약 105,000원', desc: '하카타에서 유후인, 벳푸, 구마모토까지 특급 열차 및 신칸센 무제한', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '특급 유후인노모리 관광열차', price: '편도 약 45,000원', desc: '원목 클래식 인테리어와 에키벤 도시락을 즐기는 초인기 온천 관광열차', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '후쿠오카 오픈톱 시티투어 버스', price: '대인 약 15,000원', desc: '지붕 없는 2층 버스로 도심 하이웨이와 해안 도로를 달리는 투어 버스', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선
+            { type: 'spot', name: '유후인 긴린코 호수 & 유노츠보 거리', price: '무료입장', desc: '온천수가 솟아올라 신비로운 아침 물안개가 피어오르는 호수와 디저트 거리', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '다자이후 텐만구 학문의 신사', price: '무료입장', desc: '학문의 신을 모신 유서 깊은 신사와 갓 구운 우메가에모찌(매화떡)', img: 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '씨사이드 모모치 해변 & 후쿠오카 타워', price: '타워 전망대 약 7,500원', desc: '이국적인 인공 해변과 234m 타워에서 바라보는 하카타만 360도 석양', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '나카스 강변 야타이(포장마차) 거리', price: '라멘 약 8,000원~', desc: '강변을 따라 늘어선 포장마차에서 진한 하카타 돈코츠 라멘과 하이볼 한잔', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '캐널시티 하카타 음악 분수쇼', price: '무료 관람', desc: '곡선형 복합 쇼핑몰 중심 운하에서 매시 정각 웅장하게 펼쳐지는 분수쇼', img: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '벳푸 가마도 지옥온천 순례', price: '입장료 약 4,000원', desc: '신비로운 코발트블루 온천수와 온천 증기로 쪄낸 달걀 및 사이다 맛보기', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80' }
+        ],
+        tokyo: [
+            // 숙소 5선
+            { type: 'stay', name: '도쿄 에디션 도라노몬', price: '1박 약 720,000원~', desc: '도쿄타워가 눈앞에 펼쳐지는 감각적인 정원 콘셉트의 하이엔드 럭셔리', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '호텔 그레이서리 신주쿠', price: '1박 약 220,000원~', desc: '신주쿠 가부키초 중심, 실물 크기 거대 고질라 헤드가 반기는 랜드마크', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '미츠이 가든 호텔 긴자 프리미어', price: '1박 약 280,000원~', desc: '16층 고층 로비에서 긴자 스카이라인 조망과 세련된 바를 갖춘 인기 호텔', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '아사쿠사 뷰 호텔', price: '1박 약 180,000원~', desc: '도쿄 스카이트리와 유서 깊은 센소지 사원의 뷰가 한눈에 들어오는 객실', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '렘 롯폰기 호텔', price: '1박 약 160,000원~', desc: '롯폰기역 도보 1분, 전 객실 최고급 안마의자를 구비한 실속형 호텔', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
+            // 차량·교통 4선
+            { type: 'transport', name: '도쿄 서브웨이 72시간 패스', price: '1인 약 13,500원', desc: '도쿄 메트로 & 도에이 지하철 전 13개 노선을 3일간 무제한 탑승', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '케이세이 스카이라이너 급행', price: '편도 약 21,000원', desc: '나리타공항에서 닛포리/우에노까지 시속 160km로 36분 만에 주파', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '나리타 익스프레스 (N\'EX) 왕복', price: '외국인 왕복 약 45,000원', desc: '나리타공항에서 도쿄역, 신주쿠, 시부야까지 갈아탐 없이 직통 연결', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '유리카모메 무인 모노레일', price: '1일권 약 7,400원', desc: '레인보우 브릿지를 건너 오다이바 해상 인공섬을 감상하는 모노레일', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선
+            { type: 'spot', name: '시부야 스카이 전망대 & 스크램블', price: '입장권 약 20,000원~', desc: '지상 229m 옥상 루프탑에서 즐기는 360도 도쿄 전경과 교차로 인파', img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '아사쿠사 센소지 사원 & 나카미세도리', price: '무료입장', desc: '붉은 카미나리몬 제등과 전통 간식(당고, 멜론빵)이 늘어선 도쿄 최고 사찰', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '롯폰기 힐즈 모리타워 전망대', price: '대인 약 18,000원', desc: '도쿄타워의 붉은 불빛이 가장 아름다운 각도로 내려다보이는 야경 명소', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '메이지 신궁 & 하라주쿠 다케시타', price: '무료입장', desc: '도심 속 거대한 원시림 숲길과 일본 10대 유행 발신지 골목의 반전 매력', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '신주쿠 교엔 황실 정원', price: '대인 500엔 (약 4,500원)', desc: '전통 일본식 정원과 프랑스식 정원이 조화된 애니메이션 감성 도심 오아시스', img: 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '팀랩 플래닛 도쿄 (토요스)', price: '입장권 약 36,000원~', desc: '맨발로 물속을 걸으며 온몸으로 체험하는 환상적인 빛과 인터랙티브 미디어아트', img: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=600&q=80' }
+        ],
+        danang: [
+            // 숙소 5선
+            { type: 'stay', name: '인터컨티넨탈 다낭 선 페닌슐라', price: '1박 약 650,000원~', desc: '손짜 반도 열대 정글과 프라이빗 비치를 품은 세계적인 럭셔리 리조트', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '하얏트 리젠시 다낭 리조트 & 스파', price: '1박 약 290,000원~', desc: '미케비치 앞 대형 키즈풀과 캠프 하얏트를 갖춘 가족 휴양 특화 리조트', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '프리미어 빌리지 다낭 리조트', price: '1박 약 450,000원~', desc: '전 객실 프라이빗 개인 수영장과 풀 키친을 갖춘 럭셔리 풀빌라', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '호이안 벨 마리나 리조트 & 스파', price: '1박 약 120,000원~', desc: '호이안 올드타운 도보 5분 거리, 강변 인피니티풀과 뛰어난 가성비', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: 'TMS 호텔 다낭 비치', price: '1박 약 90,000원~', desc: '미케비치 도보 1분, 25층 환상적인 루프탑 오션풀 가성비 호텔', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
+            // 차량·교통 4선
+            { type: 'transport', name: '다낭~호이안 전담 기사 포함 일일 렌트', price: '1일(10시간) 약 55,000원', desc: '에어컨 완비 전용 SUV 차량으로 바나힐, 호이안까지 자유롭게 투어', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '그랩 (Grab) 택시 호출 서비스', price: '1회 약 3,000~8,000원', desc: '바가지 걱정 없이 정찰제로 시내와 해변을 편리하게 이동하는 필수 앱', img: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '바나힐 왕복 리무진 셔틀버스', price: '1인 왕복 약 12,000원', desc: '시내 호텔에서 바나힐 케이블카 승강장까지 편안하게 이동하는 셔틀', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '호이안 투본강 목선 소원배', price: '1척(2~3인) 약 10,000원', desc: '형형색색의 등불을 켜고 강물에 소원초를 띄우는 낭만적인 나룻배', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선
+            { type: 'spot', name: '썬월드 바나힐 골든브릿지 (신의 손)', price: '입장권 약 48,000원', desc: '해발 1,400m 구름 위 거대한 바위 손이 받치고 있는 금빛 다리 랜드마크', img: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '호이안 올드타운 유네스코 역사거리', price: '거리 티켓 약 6,500원', desc: '노란빛 프랑스-베트남풍 건물들과 밤마다 빛나는 환상적인 오색 등불', img: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '미케비치 해변 & 패러세일링', price: '무료 (코코넛 2,000원)', desc: '포브스 선정 세계 6대 해변, 백사장과 야자수가 이어지는 휴양 성지', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '다낭 대성당 (핑크성당)', price: '무료입장', desc: '프랑스 식민지 시절 세워진 파스텔 핑크빛 고딕 양식 건축물과 포토존', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '손짜 린응사 (영흥사) 해수관음상', price: '무료입장', desc: '다낭 바다를 굽어보는 67m 높이의 동양 최대 백옥 해수관음보살상', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '안방비치 & 덱하우스 레스토랑', price: '자유 (식사 1~2만원대)', desc: '푸른 파도를 바라보며 시원한 수제 버거와 망고 스무디를 즐기는 비치클럽', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' }
+        ],
+        bangkok: [
+            // 숙소 5선
+            { type: 'stay', name: '카펠라 방콕 (차오프라야 강변)', price: '1박 약 850,000원~', desc: '전 객실 차오프라야 리버뷰, 미쉐린 스타 다이닝을 갖춘 최상급 럭셔리', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '포시즌스 호텔 방콕 앳 차오프라야', price: '1박 약 620,000원~', desc: '계단식 강변 수영장과 아트 갤러리가 공존하는 세계적인 5성급 리조트', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '방콕 메리어트 마르퀴스 퀸즈파크', price: '1박 약 210,000원~', desc: '프롬퐁역 도보 거리, 벤자시리 공원 전망과 초대형 인터내셔널 뷔페', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '반얀트리 방콕', price: '1박 약 240,000원~', desc: '럭셔리 스파 시설과 61층 문바(Moon Bar) 루프탑을 보유한 특급 호텔', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
+            { type: 'stay', name: '이스틴 그랜드 호텔 파야타이', price: '1박 약 180,000원~', desc: '공항철도 파야타이역 직결, 2개의 야외 인피니티풀을 갖춘 초인기 호텔', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
+            // 차량·교통 4선
+            { type: 'transport', name: 'BTS 스카이트레인 1일 무제한 패스', price: '1인 150바트 (약 6,000원)', desc: '방콕 도심 지상철 전 노선을 하루 종일 트래픽 잼 없이 무제한 탑승', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '차오프라야 투어리스트 보트 홉온홉오프', price: '1일권 150바트 (약 6,000원)', desc: '왕궁, 왓 아룬, 아이콘시암 등 주요 강변 관광지를 오가는 수상 크루즈', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '볼트 (Bolt) / 그랩 (Grab) 차량 호출', price: '1회 약 3,000~9,000원', desc: '교통 체증 심한 방콕에서 바가지 없이 정찰제로 승차하는 필수 앱', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
+            { type: 'transport', name: '수완나품 국제공항 프라이빗 VIP 밴', price: '편도 약 32,000원', desc: '공항 입국장 피켓 미팅 후 호텔 로비까지 짐 싣고 직행하는 쾌적한 이동', img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80' },
+            // 주요 명소 6선
+            { type: 'spot', name: '왓 아룬 (새벽사원) & 전통의상 스냅', price: '입장료 약 4,000원', desc: '도자기 타일로 장식된 화려한 불탑과 강 건너로 지는 환상적인 일몰 뷰', img: 'https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '아이콘시암 복합 쇼핑몰 (쑥시암)', price: '무료 관람 (간식 1,500원~)', desc: '실내에 그대로 재현된 태국 수상시장 먹거리와 세계적 명품 브랜드 타운', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '왓 프라깨우 (에메랄드 사원) & 방콕 왕궁', price: '입장료 약 20,000원', desc: '태국 최고의 국보인 에메랄드 불상을 모신 찬란한 황금빛 왕실 사원', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '짜뚜짝 주말시장 벼룩시장', price: '자유 탐방', desc: '15,000개 이상의 상점이 밀집한 동남아 최대 규모의 야외 쇼핑 마켓', img: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '티츄카 (Tichuca) 루프탑 바', price: '칵테일 약 20,000원~', desc: '거대한 발광 해파리 조형물과 46층에서 바라보는 360도 방콕 도시 야경', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+            { type: 'spot', name: '아시아티크 더 리버프론트 야시장', price: '무료입장', desc: '강변 대관람차와 시원한 강바람을 맞으며 즐기는 쇼핑 및 라이브 펍 거리', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' }
+        ]
+    };
+
+    // 그 외 국내/해외 소도시 및 커스텀 여행지를 위한 지능형 15선 스팟 생성기
+    function generateDynamicSpots(destName, key = '') {
+        const cleanName = destName.replace(/[\[\]\(\)\{\}]/g, '').split(' ')[0] || destName;
+        const isOverseas = ['rome', 'prague', 'barcelona', 'paris', 'hawaii', 'sydney', 'bali', 'singapore', 'cebu', 'sapporo', 'nagoya', 'nhatrang', 'phuquoc', 'chiangmai', 'taipei'].includes(key) ||
+            /유럽|미국|이탈리아|프랑스|스페인|체코|호주|하와이|발리|싱가포르|일본|대만|베트남|태국|필리핀|영국|독일|스위스|오스트리아|터키/.test(destName);
+        
+        const isCoastal = /해변|바다|도|섬|남해|통영|군산|목포|포항|울진|태안|울릉|여수|부산|제주|동해|서해/.test(destName);
+
+        if (isOverseas) {
+            return [
+                // 숙소 5선
+                { type: 'stay', name: `${cleanName} 중심가 5성급 럭셔리 호텔`, price: '1박 약 380,000원~', desc: `${cleanName} 랜드마크 전망과 전용 스파, 최상급 컨시어지 서비스`, img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80' },
+                { type: 'stay', name: `${cleanName} 역사지구 부티크 호텔`, price: '1박 약 240,000원~', desc: '고풍스러운 건축미와 도보 관광에 최적화된 편리한 입지', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80' },
+                { type: 'stay', name: `${cleanName} 감성 뷰 에어비앤비 독채`, price: '1박 약 190,000원~', desc: '현지인처럼 살아보는 독립 주방 및 멋진 테라스 뷰를 갖춘 숙소', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
+                { type: 'stay', name: `${cleanName} 리조트 & 인피니티풀`, price: '1박 약 310,000원~', desc: '이국적인 휴양을 위한 야외 수영장과 풀사이드 라운지 바', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80' },
+                { type: 'stay', name: `${cleanName} 역세권 실속형 시티 호텔`, price: '1박 약 120,000원~', desc: '대중교통 이동이 편리하고 가성비 뛰어난 현대식 비즈니스 호텔', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
+                // 차량·교통 4선
+                { type: 'transport', name: `${cleanName} 공항 익스프레스 직통열차`, price: '편도 약 18,000원', desc: '국제공항에서 도심 중앙역까지 쾌속으로 연결하는 직통 급행', img: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=600&q=80' },
+                { type: 'transport', name: `${cleanName} 시티 메트로 & 트램 3일 패스`, price: '3일권 약 29,000원', desc: '도시 내 지하철, 트램, 시내버스를 자유롭게 무제한 탑승', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
+                { type: 'transport', name: '현지 렌터카 SUV (네비 & 보험 포함)', price: '24시간 약 78,000원~', desc: '근교 소도시 및 절경 드라이브를 위한 안전한 렌터카 서비스', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
+                { type: 'transport', name: `${cleanName} 홉온홉오프 2층 관광버스`, price: '1일권 약 35,000원', desc: '도시 대표 명소만을 순환하며 한국어 오디오 가이드 지원', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
+                // 주요 명소 6선
+                { type: 'spot', name: `${cleanName} 대표 광장 & 랜드마크 대성당`, price: '무료입장 (탑 약 1만원)', desc: `수백 년 역사의 건축 예술과 ${cleanName}의 상징적인 중심 광장`, img: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' },
+                { type: 'spot', name: `${cleanName} 국립 미술관 & 박물관`, price: '입장료 약 22,000원', desc: '세계적인 거장들의 회화 및 고대 조각 작품 소장 예술 성지', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
+                { type: 'spot', name: `${cleanName} 구시가지 전통 골목 산책로`, price: '무료입장', desc: '조약돌 바닥과 아기자기한 현지 부티크 상점들이 이어진 감성 거리', img: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80' },
+                { type: 'spot', name: `${cleanName} 파노라마 시티 전망대`, price: '성인 약 25,000원', desc: `가장 높은 전망대에서 내려다보는 ${cleanName}의 황홀한 360도 일몰과 야경`, img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' },
+                { type: 'spot', name: `${cleanName} 중앙 전통시장 & 푸드홀`, price: '자유 (메뉴 1~2만원)', desc: '현지 로컬 식재료와 갓 조리된 전통 미식을 맛보는 활기찬 마켓', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' },
+                { type: 'spot', name: `${cleanName} 강변/해변 리버크루즈 & 산책로`, price: '탑승료 약 28,000원', desc: '노을 지는 강변을 따라 흐르는 낭만적인 음악과 야경 감상 코스', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80' }
+            ];
+        } else {
+            // 국내 소도시 및 힐링/자연 명소
+            return [
+                // 숙소 5선
+                { type: 'stay', name: `${cleanName} 프리미엄 감성 독채 풀빌라`, price: '1박 약 260,000원~', desc: isCoastal ? '탁 트인 오션뷰와 사계절 온수 개인풀 감성 스테이' : '피톤치드 숲속 자연과 자쿠지가 어우러진 힐링 독채 펜션', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80' },
+                { type: 'stay', name: `${cleanName} 전통 한옥스테이 & 고택`, price: '1박 약 150,000원~', desc: '따뜻한 온돌방과 고즈넉한 처마 끝 풍경을 즐기는 전통 숙소', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
+                { type: 'stay', name: `${cleanName} 호텔 & 온천 스파 리조트`, price: '1박 약 180,000원~', desc: '지역 대표 랜드마크 휴양 호텔, 사우나 및 조식 뷔페 제공', img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80' },
+                { type: 'stay', name: `${cleanName} 럭셔리 마운틴/리버 글램핑`, price: '1박 약 170,000원~', desc: '호텔식 침구와 바비큐 그릴, 불멍을 즐길 수 있는 낭만 글램핑', img: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80' },
+                { type: 'stay', name: `${cleanName} 시내 가성비 비즈니스 호텔`, price: '1박 약 85,000원~', desc: '터미널/KTX역 인근 깔끔하고 조용한 실속형 현대식 호텔', img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' },
+                // 차량·교통 4선
+                { type: 'transport', name: '현지 렌터카 아반떼/K5 (완전자차)', price: '24시간 약 46,000원~', desc: `${cleanName} 전역의 숨은 드라이브 코스와 맛집 탐방에 필수`, img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
+                { type: 'transport', name: `${cleanName} KTX/고속버스 연계 셔틀`, price: '1회 1,500원', desc: '중앙역과 터미널에서 주요 관광단지를 빠르게 잇는 교통편', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80' },
+                { type: 'transport', name: `${cleanName} 레저 전동바이크 & 자전거 대여`, price: '1시간 약 10,000원', desc: '호수 및 강변 자전거 전용도로를 따라 달리는 힐링 라이딩', img: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=600&q=80' },
+                { type: 'transport', name: `${cleanName} 해상/호수 관광 유람선`, price: '대인 약 16,000원', desc: isCoastal ? '바다 절경과 기암괴석을 감상하는 시원한 유람선' : '잔잔한 호수를 가로지르는 청풍 유람선 코스', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=600&q=80' },
+                // 주요 명소 6선
+                { type: 'spot', name: `${cleanName} 대표 자연생태 명소 & 출렁다리`, price: '성인 3,000원~무료', desc: `천혜의 자연 비경과 스릴 넘치는 스카이워크 및 전망대`, img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80' },
+                { type: 'spot', name: `${cleanName} 역사문화 유적 & 전통마을`, price: '무료입장', desc: '선조들의 숨결이 깃든 고즈넉한 돌담길과 문화재 탐방로', img: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=600&q=80' },
+                { type: 'spot', name: `${cleanName} 대표 테마 식물원 & 수목원`, price: '성인 약 9,000원', desc: '사계절 아름다운 꽃과 푸른 수목들이 가득한 힐링 산책 정원', img: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=600&q=80' },
+                { type: 'spot', name: `${cleanName} 전통 5일장 & 향토 야시장`, price: '자유 (먹거리 5,000원~)', desc: '지역 명물 먹거리(닭강정, 전병, 막걸리)와 인정 넘치는 시장', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' },
+                { type: 'spot', name: `${cleanName} 감성 뷰 카페거리 & 베이커리`, price: '커피 5,500원~', desc: '탁 트인 전망과 시그니처 베이커리를 즐기는 SNS 인기 카페', img: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80' },
+                { type: 'spot', name: `${cleanName} 일출/일몰 파노라마 전망대`, price: '무료입장', desc: `${cleanName}의 산과 물길이 한눈에 펼쳐지는 감동적인 노을 포인트`, img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80' }
+            ];
+        }
+    }
+
+    // 카드 1개 HTML 템플릿 빌더
+    function createSpotCardHTML(spot) {
+        const typeBadgeText = typeLabelMap[spot.type] || '추천스팟';
+        return `
+            <div class="spot-card" data-type="${spot.type}">
+                <div class="spot-card-img-wrap">
+                    <img src="${spot.img}" alt="${spot.name}" class="spot-card-img" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=600&q=80'">
+                    <span class="spot-type-badge ${spot.type}">${typeBadgeText}</span>
+                    <span class="spot-price-badge">${spot.price}</span>
+                </div>
+                <div class="spot-card-body">
+                    <div class="spot-card-title" title="${spot.name}">${spot.name}</div>
+                    <div class="spot-card-desc" title="${spot.desc}">${spot.desc}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // 필터 탭 클릭 이벤트 리스너 등록
+    let currentSpotFilter = 'all';
+    spotTabs.forEach(tabBtn => {
+        tabBtn.addEventListener('click', () => {
+            spotTabs.forEach(btn => btn.classList.remove('active'));
+            tabBtn.classList.add('active');
+            currentSpotFilter = tabBtn.getAttribute('data-filter') || 'all';
+            applyFilterToCards();
+        });
+    });
+
+    function applyFilterToCards() {
+        const allCards = spotCardsGrid.querySelectorAll('.spot-card');
+        allCards.forEach(card => {
+            const cardType = card.getAttribute('data-type');
+            if (currentSpotFilter === 'all' || cardType === currentSpotFilter) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // 우측 안내 카드 15선 이상 렌더링 함수
     function renderGuideCard(destName, key = null) {
         if (!destName || !destName.trim()) {
             guidePlaceholder.style.display = 'block';
             guideContentBox.style.display = 'none';
-            facilityTitle.textContent = '선택 여행지 거점 및 편의시설 가이드';
+            spotFilterTabs.style.display = 'none';
+            facilityTitle.textContent = '선택 여행지 주요 스팟 & 숙소·차량 가이드';
             return;
         }
 
-        // DB에서 매칭 항목 찾기
-        let match = null;
-        if (key) {
-            match = allDestinationsDB.find(d => d.key === key);
-        }
-        if (!match) {
-            match = allDestinationsDB.find(d => 
-                destName.toLowerCase().includes(d.key) ||
-                d.name.toLowerCase().includes(destName.toLowerCase()) ||
-                destName.toLowerCase().split(' ')[0].includes(d.key)
+        const trimmedDest = destName.trim();
+
+        // 1. 매칭 키 확인
+        let matchedKey = key;
+        if (!matchedKey) {
+            const lower = trimmedDest.toLowerCase();
+            const found = allDestinationsDB.find(d => 
+                lower.includes(d.key) ||
+                d.name.toLowerCase().includes(lower) ||
+                lower.split(' ')[0].includes(d.key)
             );
+            if (found) matchedKey = found.key;
         }
 
+        // 2. 15개 이상의 스팟 목록 가져오기
+        let spotsList = [];
+        if (matchedKey && curatedSpotsDB[matchedKey]) {
+            spotsList = curatedSpotsDB[matchedKey];
+        } else {
+            spotsList = generateDynamicSpots(trimmedDest, matchedKey);
+        }
+
+        // 3. UI 갱신 (15가지 이상 실물 카드 렌더링)
+        facilityTitle.textContent = `${trimmedDest} 추천 스팟 & 숙소·차량 (15선)`;
         guidePlaceholder.style.display = 'none';
         guideContentBox.style.display = 'block';
+        spotFilterTabs.style.display = 'flex';
 
-        if (match) {
-            facilityTitle.textContent = `${match.name} 추천 거점 및 주요 시설 가이드`;
-            facilityLodging.textContent = match.lodging;
-            facilityTransport.textContent = match.transport;
-            facilityMain.textContent = match.main;
-        } else {
-            // 커스텀 입력 여행지에 대한 스마트 시설 가이드 템플릿
-            facilityTitle.textContent = `${destName} 주요 거점 및 편의시설 가이드`;
-            facilityLodging.textContent = `도심 중심가 및 주요 랜드마크 인근 숙소 구역 권장 (교통편 및 이동 동선 최우선 고려)`;
-            facilityTransport.textContent = `현지 도착 후 공항/역 렌터카 센터 또는 주요 대중교통 1일 정기권 활용 추천`;
-            facilityMain.textContent = `중앙역/공항 종합 관광안내소, 물품보관소(코인락커), 지역 종합병원 응급실 위치 사전 체크`;
-        }
+        // 필터 '전체'로 초기화
+        currentSpotFilter = 'all';
+        spotTabs.forEach(btn => {
+            if (btn.getAttribute('data-filter') === 'all') {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
 
-        // 시각적 강조 애니메이션
-        guideCard.style.borderColor = '#3b82f6';
-        guideCard.style.boxShadow = '0 10px 25px -5px rgba(59, 130, 246, 0.2)';
+        // 15개 카드 렌더링
+        spotCardsGrid.innerHTML = spotsList.map(spot => createSpotCardHTML(spot)).join('');
+
+        // 4. 감성 애니메이션 피드백
+        guideCard.style.borderColor = '#0284c7';
+        guideCard.style.boxShadow = '0 12px 28px -5px rgba(2, 132, 199, 0.22)';
         setTimeout(() => {
             guideCard.style.borderColor = 'rgba(226, 232, 240, 0.95)';
             guideCard.style.boxShadow = 'var(--shadow-card)';

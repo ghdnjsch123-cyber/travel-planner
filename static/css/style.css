@@ -48,7 +48,7 @@ body {
 
 /* 3. 레이아웃 컨테이너 */
 .app-container {
-    max-width: 1240px;
+    max-width: 1440px;
     margin: 0 auto;
 }
 
@@ -64,6 +64,26 @@ body {
     justify-content: center;
     gap: 16px;
     flex-wrap: wrap;
+}
+
+.boarding-badge {
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    color: #ffffff;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+    text-transform: uppercase;
+}
+
+.boarding-badge::before {
+    content: "✈";
+    font-size: 0.82rem;
 }
 
 .app-header h1 {
@@ -398,20 +418,31 @@ body {
 .guide-panel-header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
     border-bottom: 1px solid #f1f5f9;
 }
 
+.guide-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .guide-badge {
-    background-color: #ecfdf5;
-    color: #059669;
-    font-size: 0.8rem;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 9999px;
-    letter-spacing: 0.2px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    font-size: 0.74rem;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
 }
 
 .guide-panel-header h3 {
@@ -421,8 +452,42 @@ body {
     margin: 0;
 }
 
+/* 필터 탭 (전체 15+, 숙소, 차량, 관광지) */
+.spot-filter-tabs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.spot-tab {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.spot-tab:hover:not(.active) {
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
+    color: #0f172a;
+}
+
+.spot-tab.active {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(30, 64, 175, 0.25);
+}
+
+/* 안내 카드 기본 대기 상태 */
 .guide-placeholder-box {
-    padding: 24px 16px;
+    padding: 40px 20px;
     text-align: center;
     color: var(--text-muted);
     font-size: 0.92rem;
@@ -432,39 +497,172 @@ body {
     border: 1px dashed #cbd5e1;
 }
 
-.facility-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
+.placeholder-compass-icon {
+    font-size: 2.4rem;
+    color: #0284c7;
+    margin-bottom: 10px;
+    display: inline-block;
+    animation: compassFloat 2.6s ease-in-out infinite;
 }
 
-.facility-item {
-    background-color: #f8fafc;
+@keyframes compassFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-5px) rotate(8deg); }
+}
+
+.guide-placeholder-box h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.guide-placeholder-box p {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* 15선 이상 스팟 카드 그리드 */
+.guide-content-box {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.spot-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 14px;
+    max-height: 620px;
+    overflow-y: auto;
+    padding: 4px 6px 8px 2px;
+}
+
+/* 스크롤바 세련된 커스텀 */
+.spot-cards-grid::-webkit-scrollbar {
+    width: 6px;
+}
+.spot-cards-grid::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+.spot-cards-grid::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+.spot-cards-grid::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* 개별 스팟 카드 */
+.spot-card {
+    background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: var(--radius-sm);
-    padding: 14px;
+    border-radius: 12px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    box-shadow: 0 2px 5px rgba(15, 23, 42, 0.04);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.2s ease;
 }
 
-.facility-badge {
-    display: inline-block;
-    background-color: #eff6ff;
-    color: var(--primary);
-    font-size: 0.78rem;
+.spot-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px -4px rgba(15, 23, 42, 0.12);
+    border-color: #93c5fd;
+}
+
+.spot-card-img-wrap {
+    position: relative;
+    width: 100%;
+    height: 130px;
+    overflow: hidden;
+    background-color: #f1f5f9;
+}
+
+.spot-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.spot-card:hover .spot-card-img {
+    transform: scale(1.08);
+}
+
+.spot-type-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 0.7rem;
     font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 4px;
-    width: fit-content;
+    padding: 3px 8px;
+    border-radius: 6px;
+    color: #ffffff;
+    letter-spacing: 0.2px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
-.facility-item p {
-    font-size: 0.88rem;
-    color: #1e293b;
-    margin: 0;
-    line-height: 1.55;
-    word-break: keep-all;
+.spot-type-badge.stay {
+    background: rgba(16, 185, 129, 0.92); /* 숙소: 에메랄드 그린 */
+}
+
+.spot-type-badge.transport {
+    background: rgba(37, 99, 235, 0.92); /* 차량: 딥 블루 */
+}
+
+.spot-type-badge.spot {
+    background: rgba(245, 158, 11, 0.92); /* 관광지: 앰버 골드 */
+}
+
+.spot-price-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(15, 23, 42, 0.85);
+    color: #fef08a;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.spot-card-body {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.spot-card-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.spot-card-desc {
+    font-size: 0.78rem;
+    color: #64748b;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: auto;
 }
 
 /* 기타 관심사 직접 입력창 */
