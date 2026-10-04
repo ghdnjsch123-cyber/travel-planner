@@ -367,20 +367,104 @@ body {
     }
 }
 
-/* 5. 메인 레이아웃 (결과 생성 전: 중앙 1열, 결과 생성 후: 2열) */
+/* 5. 메인 레이아웃 (좌측 입력폼 1 : 우측 안내 카드 및 일정표 1.5) */
 .main-layout {
     display: grid;
-    grid-template-columns: 1fr;
-    max-width: 720px;
+    grid-template-columns: 1fr 1.5fr; /* 안내 카드 공간이 입력폼의 1.5배 */
+    max-width: 1440px;
     margin: 0 auto;
-    gap: 24px;
+    gap: 28px;
     align-items: start;
-    transition: all 0.3s ease;
 }
 
-.main-layout.has-result {
-    max-width: 1240px;
-    grid-template-columns: 460px 1fr;
+/* 우측 패널 (안내 카드 + 생성된 일정표 스택) */
+.right-panel-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* 우측 상단 실시간 여행지 안내 카드 */
+.guide-panel-card {
+    background-color: var(--card-bg);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(12px);
+    transition: all 0.2s ease;
+}
+
+.guide-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.guide-badge {
+    background-color: #ecfdf5;
+    color: #059669;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    letter-spacing: 0.2px;
+}
+
+.guide-panel-header h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.guide-placeholder-box {
+    padding: 24px 16px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    background-color: #f8fafc;
+    border-radius: var(--radius-sm);
+    border: 1px dashed #cbd5e1;
+}
+
+.facility-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.facility-item {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.facility-badge {
+    display: inline-block;
+    background-color: #eff6ff;
+    color: var(--primary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    width: fit-content;
+}
+
+.facility-item p {
+    font-size: 0.88rem;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.55;
+    word-break: keep-all;
 }
 
 /* 기타 관심사 직접 입력창 */
@@ -413,51 +497,8 @@ body {
     line-height: 1.3;
 }
 
-/* 추천 여행지 주요 시설 및 숙소/차량 안내 카드 */
-.spot-facility-card {
-    background-color: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    border-radius: var(--radius-sm);
-    padding: 16px;
-    margin-bottom: 20px;
-}
-
-.facility-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #166534;
-    margin-bottom: 12px;
-}
-
-.facility-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-}
-
-.facility-item {
-    background-color: #ffffff;
-    border: 1px solid #dcfce7;
-    border-radius: 6px;
-    padding: 10px 12px;
-}
-
-.facility-item strong {
-    display: block;
-    font-size: 0.82rem;
-    color: #15803d;
-    margin-bottom: 4px;
-}
-
-.facility-item p {
-    font-size: 0.8rem;
-    color: #334155;
-    margin: 0;
-    line-height: 1.4;
-}
-
-@media (max-width: 960px) {
-    .main-layout.has-result {
+@media (max-width: 1024px) {
+    .main-layout {
         grid-template-columns: 1fr;
     }
     .facility-grid {

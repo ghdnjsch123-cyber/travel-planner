@@ -98,15 +98,15 @@
             </div>
         </section>
 
-        <!-- 메인 콘텐츠 영역: 좌측(입력 폼) / 우측(생성 시 나타나는 결과 화면) -->
+        <!-- 메인 콘텐츠 영역: 좌측(입력 폼 1) : 우측(안내 카드 및 일정표 1.5) -->
         <main class="main-layout" id="main-layout">
-            <!-- 1. 여행 정보 입력 폼 -->
+            <!-- 1. 좌측: 여행 조건 입력 폼 (비율 1) -->
             <section class="form-section" id="form-section">
                 <div class="card">
                     <div class="form-title-bar">
                         <h2 class="section-title">여행 조건 설정</h2>
                         <!-- 랜덤 여행플랜 짜기 버튼 -->
-                        <button type="button" id="random-plan-btn" class="btn btn-random" title="조건을 무작위로 자동 설정합니다">
+                        <button type="button" id="random-plan-btn" class="btn btn-random" title="전체 조건(인기/비인기 포함)을 무작위로 자동 설정합니다">
                             랜덤 여행플랜 짜기
                         </button>
                     </div>
@@ -115,7 +115,7 @@
                         <!-- 1. 여행지 -->
                         <div class="form-group">
                             <label for="destination">1. 여행지 <span class="required">*</span></label>
-                            <input type="text" id="destination" name="destination" placeholder="예: 제주도, 오사카, 부산, 다낭 (상단 순위 클릭 가능)" required>
+                            <input type="text" id="destination" name="destination" placeholder="예: 제주도, 남해, 단양, 프라하, 발리 (상단 순위 또는 랜덤 클릭)" required>
                         </div>
 
                         <!-- 2. 여행 기간 (시작일 & 종료일 선택) -->
@@ -160,7 +160,6 @@
                         <!-- 4. 관심사 및 선호 활동 (대주제 탭 + 세부항목 선택 + 기타 직접 입력) -->
                         <div class="form-group">
                             <label class="label-heading">4. 관심사 및 선호 활동 <span class="required">*</span> (복수 선택 가능)</label>
-                            <!-- 대주제 선택 버튼들 -->
                             <div class="interest-categories">
                                 <button type="button" class="category-btn active" data-cat="food">미식·맛집</button>
                                 <button type="button" class="category-btn" data-cat="nature">자연·힐링</button>
@@ -169,7 +168,6 @@
                                 <button type="button" class="category-btn" id="custom-interest-toggle-btn">기타 (직접 입력)</button>
                             </div>
 
-                            <!-- 세부 항목 버튼 영역 (대주제별 전환) -->
                             <div class="sub-interest-container">
                                 <!-- 미식·맛집 -->
                                 <div class="sub-interest-group active" data-cat="food">
@@ -205,12 +203,11 @@
                                 </div>
                             </div>
 
-                            <!-- 기타 직접 입력 필드 (기타 버튼 클릭 시 표시) -->
+                            <!-- 기타 직접 입력 필드 -->
                             <div id="custom-interest-box" class="custom-interest-box" style="display: none;">
                                 <input type="text" id="custom-interest-input" placeholder="기타 관심사 입력 (예: 빵지순례, 낚시, 별자리 관측 등)">
                             </div>
 
-                            <!-- 선택된 관심사 요약 태그 영역 -->
                             <div class="selected-summary-wrap">
                                 <span class="summary-label">선택 항목:</span>
                                 <span id="selected-interests-text" class="summary-text">선택된 항목이 없습니다.</span>
@@ -220,7 +217,6 @@
                         <!-- 5. 여행 인원 (슬라이더 바) & 관계 (버튼 선택) -->
                         <div class="form-group">
                             <label class="label-heading">5. 여행 인원 <span class="required">*</span></label>
-                            <!-- 인원 슬라이더 바 -->
                             <div class="range-group">
                                 <input type="range" id="companion-count" min="1" max="10" value="2" class="range-styled">
                                 <div class="range-display">
@@ -228,7 +224,6 @@
                                 </div>
                             </div>
 
-                            <!-- 인원과의 관계 버튼 선택 -->
                             <div class="relation-group" style="margin-top: 10px;">
                                 <span class="sub-label">동행 관계:</span>
                                 <div class="btn-group-toggle" id="relation-btn-group">
@@ -253,7 +248,7 @@
                             </div>
                         </div>
 
-                        <!-- 7. 숙소 선호 스타일 (노숙, 무박·밤샘 버튼 추가) -->
+                        <!-- 7. 숙소 선호 스타일 (노숙, 무박·밤샘 버튼 포함) -->
                         <div class="form-group">
                             <label class="label-heading">7. 숙소 선호 스타일 <span class="required">*</span></label>
                             <div class="btn-group-toggle" id="lodging-btn-group">
@@ -317,12 +312,43 @@
                 </div>
             </section>
 
-            <!-- 2. 우측: 생성 버튼 클릭 후 나타나는 결과 영역 (초기 숨김) -->
-            <section class="result-section" id="result-section" style="display: none;">
-                <div class="card result-card">
+            <!-- 2. 우측: 안내 카드 및 생성된 여행 일정표 영역 (비율 1.5) -->
+            <section class="right-panel-section" id="right-panel">
+                <!-- 2-1. 상단 안내 카드 (여행지 선택/랜덤 시 실시간 표시, 1.5배 넓은 공간 활용) -->
+                <div class="card guide-panel-card" id="guide-panel-card">
+                    <div class="guide-panel-header">
+                        <span class="guide-badge">여행지 가이드</span>
+                        <h3 id="facility-title">선택 여행지 거점 및 편의시설 가이드</h3>
+                    </div>
+
+                    <!-- 안내 카드 대기 기본 문구 -->
+                    <div id="guide-placeholder" class="guide-placeholder-box">
+                        <p>상단의 <strong>인기 순위 여행지</strong>를 클릭하거나 <strong>[랜덤 여행플랜 짜기]</strong>를 누르시면, 해당 여행지의 추천 거점 숙소, 교통 및 주요 시설 정보가 이곳에 실시간으로 표시됩니다.</p>
+                    </div>
+
+                    <!-- 실제 여행지 정보 표시 박스 -->
+                    <div id="guide-content-box" class="guide-content-box" style="display: none;">
+                        <div class="facility-grid">
+                            <div class="facility-item">
+                                <span class="facility-badge">추천 숙소 거점</span>
+                                <p id="facility-lodging">-</p>
+                            </div>
+                            <div class="facility-item">
+                                <span class="facility-badge">차량 및 이동 팁</span>
+                                <p id="facility-transport">-</p>
+                            </div>
+                            <div class="facility-item">
+                                <span class="facility-badge">주요 관문 & 편의시설</span>
+                                <p id="facility-main">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2-2. 생성된 여행 일정표 카드 (일정 생성 버튼 클릭 시 로딩 및 결과 노출) -->
+                <div class="card result-card" id="result-card" style="display: none;">
                     <div class="result-header">
                         <h2 class="section-title">생성된 여행 일정표</h2>
-                        <!-- 액션 버튼들 -->
                         <div id="result-actions" class="action-buttons" style="display: none;">
                             <button id="copy-btn" class="btn btn-secondary btn-sm" title="일정 복사">
                                 클립보드 복사
@@ -330,25 +356,6 @@
                             <button id="download-btn" class="btn btn-secondary btn-sm" title="Markdown 다운로드">
                                 Markdown 파일 다운로드
                             </button>
-                        </div>
-                    </div>
-
-                    <!-- 추천 여행지 선택 시 나타나는 거점 숙소 & 차량/주요 시설 안내 카드 -->
-                    <div id="recommended-spot-facility-box" class="spot-facility-card" style="display: none;">
-                        <h4 id="facility-title" class="facility-title">선택 여행지 주요 거점 및 편의시설 가이드</h4>
-                        <div class="facility-grid">
-                            <div class="facility-item">
-                                <strong>추천 숙소 거점</strong>
-                                <p id="facility-lodging">-</p>
-                            </div>
-                            <div class="facility-item">
-                                <strong>차량 및 이동 팁</strong>
-                                <p id="facility-transport">-</p>
-                            </div>
-                            <div class="facility-item">
-                                <strong>주요 관문 & 편의시설</strong>
-                                <p id="facility-main">-</p>
-                            </div>
                         </div>
                     </div>
 
@@ -404,7 +411,6 @@
         </div>
     </div>
 
-    <!-- 메인 자바스크립트 연결 -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
