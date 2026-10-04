@@ -97,6 +97,28 @@ body {
     box-shadow: 0 6px 14px rgba(30, 64, 175, 0.35);
 }
 
+/* 로그아웃 버튼 */
+.btn-logout {
+    background-color: rgba(255, 255, 255, 0.85);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 7px 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 9999px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-logout:hover {
+    background-color: #ffffff;
+    color: var(--danger-color);
+    border-color: #fca5a5;
+    transform: translateY(-1px);
+}
+
 /* 설치 안내 모달 */
 .modal-overlay {
     position: fixed;

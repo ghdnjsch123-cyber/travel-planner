@@ -3,7 +3,7 @@ import sys
 import json
 import logging
 import requests
-from flask import Flask, render_template, request, jsonify, Response, stream_with_context
+from flask import Flask, render_template, request, jsonify, Response, stream_with_context, session, redirect, url_for
 from dotenv import load_dotenv
 from google import genai
 
@@ -25,8 +25,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# 3. Flask 앱 초기화
+# 3. Flask 앱 초기화 및 세션 암호화 키 설정
 app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY", "travel-planner-auth-key-1234")
+
+# 사이트 접근 비밀번호 (기본값: 1234)
+SITE_PASSWORD = os.environ.get("SITE_PASSWORD", "1234")
 
 # 4. Gemini API 클라이언트 초기화 함수
 def get_gemini_client():
@@ -159,13 +163,44 @@ def create_travel_prompt(prompt_type, destination, duration, budget, interests, 
 """
     return prompt
 
-# 7. 메인 페이지 라우트
+# 7. 메인 페이지 라우트 (비밀번호 인증 필요)
 @app.route('/')
 def index():
-    logger.info("메인 페이지('/') 접속 요청 수신")
+    if not session.get('authenticated'):
+        logger.info("미인증 사용자 접근 감지 -> 로그인 페이지로 리다이렉트")
+        return redirect(url_for('login'))
+    logger.info("인증된 사용자 메인 페이지('/') 접속")
     return render_template('index.html')
 
-# 7-1. PWA 서비스 워커 및 매니페스트 라우트
+# 7-1. 로그인 라우트 (비밀번호: 1234)
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    # 이미 인증된 사용자는 바로 메인으로 이동
+    if session.get('authenticated'):
+        return redirect(url_for('index'))
+
+    error = None
+    if request.method == 'POST':
+        input_password = request.form.get('password', '').strip()
+        if input_password == SITE_PASSWORD:
+            logger.info("비밀번호 일치 -> 세션 인증 성공")
+            session['authenticated'] = True
+            session.permanent = True  # 브라우저 닫을 때까지 유지
+            return redirect(url_for('index'))
+        else:
+            logger.warning("비밀번호 불일치 로그인 시도 실패")
+            error = "비밀번호가 올바르지 않습니다. 다시 시도해 주세요."
+
+    return render_template('login.html', error=error)
+
+# 7-2. 로그아웃 라우트
+@app.route('/logout')
+def logout():
+    session.pop('authenticated', None)
+    logger.info("로그아웃 완료")
+    return redirect(url_for('login'))
+
+# 7-3. PWA 서비스 워커 및 매니페스트 라우트
 from flask import send_from_directory
 
 @app.route('/sw.js')
@@ -179,9 +214,15 @@ def service_worker():
 def manifest():
     return send_from_directory('static', 'manifest.json')
 
-# 8. 여행 플랜 생성 스트리밍 API 라우트
+# 8. 여행 플랜 생성 스트리밍 API 라우트 (인증 필수)
 @app.route('/generate', methods=['POST'])
 def generate_travel_plan():
+    if not session.get('authenticated'):
+        return jsonify({
+            'status': 'error',
+            'error': '인증이 만료되었습니다. 페이지를 새로고침하여 비밀번호를 다시 입력해주세요.'
+        }), 401
+
     logger.info(">>> 여행 플랜 생성('/generate') 요청 수신")
 
     data = request.get_json(silent=True)
