@@ -1,13 +1,15 @@
 /**
  * AI 여행 플래너 클라이언트 스크립트 (app.js)
- * - 인터랙티브 버튼형 폼 컨트롤 (날짜 선택, 예산, 관심사 칩, 인원 슬라이더, 스타일 등)
- * - 랜덤 여행플랜 짜기 자동완성 기능
+ * - 버튼 기반 직관적 인터페이스 (날짜 선택, 총 예산, 관심사 칩 + 기타 입력, 인원 슬라이더, 추천 스타일 8종)
+ * - 인기 추천 여행지 선택 시 거점 숙소/차량/주요시설 안내 카드 연동
+ * - 생성 버튼 클릭 시 결과 영역 표시 전환 (레이아웃 전환)
  * - 실시간 스트리밍 상태 수신 ([웹 검색중입니다.] -> [일정 설계 중])
- * - Markdown 렌더링, 클립보드 복사, .md 다운로드 및 PWA 설치 기능
+ * - PWA, 복사, 다운로드 지원
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. DOM 요소 캐싱
+    const mainLayout = document.getElementById('main-layout');
     const travelForm = document.getElementById('travel-form');
     const submitBtn = document.getElementById('submit-btn');
     const btnText = submitBtn.querySelector('.btn-text');
@@ -23,7 +25,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const companionBadge = document.getElementById('companion-count-badge');
     const randomPlanBtn = document.getElementById('random-plan-btn');
 
+    // 기타 관심사 직접 입력 관련 DOM
+    const customInterestToggleBtn = document.getElementById('custom-interest-toggle-btn');
+    const customInterestBox = document.getElementById('custom-interest-box');
+    const customInterestInput = document.getElementById('custom-interest-input');
+
     // 결과 표시 관련 DOM
+    const resultSection = document.getElementById('result-section');
+    const facilityBox = document.getElementById('recommended-spot-facility-box');
+    const facilityTitle = document.getElementById('facility-title');
+    const facilityLodging = document.getElementById('facility-lodging');
+    const facilityTransport = document.getElementById('facility-transport');
+    const facilityMain = document.getElementById('facility-main');
+
     const placeholderBox = document.getElementById('placeholder-box');
     const loadingBox = document.getElementById('loading-box');
     const loadingTitle = document.getElementById('loading-title');
@@ -37,6 +51,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentRawPlan = '';
     let currentDestination = '여행지';
+    let currentFacilityKey = null;
+
+    // ==========================================
+    // 추천 여행지 주요 시설 및 숙소/차량 데이터베이스
+    // ==========================================
+    const destinationFacilityData = {
+        jeju: {
+            title: '제주도 추천 거점 숙소 & 차량/주요 시설 가이드',
+            lodging: '서귀포 중문관광단지(호텔·리조트), 애월·한림(오션뷰 감성 펜션), 제주시청 인근(가성비 비즈니스)',
+            transport: '제주공항 렌터카 셔틀 이용(자차·렌트 최우선 권장), 주요 거점 간 급행버스(101/102번)',
+            main: '제주국제공항, 공항 내 짐보관소, 제주대학교병원(응급실), 대형 하나로마트(바베큐 장보기)'
+        },
+        busan: {
+            title: '부산 추천 거점 숙소 & 차량/주요 시설 가이드',
+            lodging: '해운대·광안리(오션뷰 호텔·에어비앤비), 서면(교통 요충지), 남포동·영도(감성 숙소)',
+            transport: '부산 도시철도 1·2호선 및 동해선 전철(대중교통 접근성 최상), 해운대 블루라인파크 해변열차',
+            main: '부산역(KTX·SRT), 김해국제공항, 부산역 짐캐리(숙소 짐배송 서비스), 인제대 해운대백병원'
+        },
+        gangneung: {
+            title: '강릉·속초 추천 거점 숙소 & 차량/주요 시설 가이드',
+            lodging: '경포대·안목해변(바다전망 펜션), 속초 해수욕장 인근(리조트·호텔), 교동 택지(가성비)',
+            transport: '렌터카 권장(해안도로 드라이브 코스 최적), 강릉역 KTX 및 시내버스(202, 302번)',
+            main: '강릉역(KTX), 속초고속버스터미널, 강릉아산병원, 속초 중앙시장 공영주차장'
+        },
+        gyeongju: {
+            title: '경주 추천 거점 숙소 & 차량/주요 시설 가이드',
+            lodging: '황리단길 인근(전통 한옥 스테이), 보문관광단지(호수 전망 리조트·호텔)',
+            transport: '전동스쿠터·자전거 대여 추천(평지 코스), 시내버스 10/11번 순환선, 주요 명소 도보 이동 용이',
+            main: '신경주역(KTX), 경주고속버스터미널, 동국대학교 경주병원, 황리단길 물품보관함'
+        },
+        yeosu: {
+            title: '여수 추천 거점 숙소 & 차량/주요 시설 가이드',
+            lodging: '돌산도(풀빌라·인피니티풀 펜션), 여수엑스포역 주변(관광호텔), 낭만포차 거리 인근(게스트하우스)',
+            transport: '렌터카 또는 카카오택시(명소 간 이동거리 10~15분 내외), 해상케이블카',
+            main: '여수엑스포역(KTX), 여수공항, 여수전남병원, 엑스포역 물품보관소'
+        },
+        osaka: {
+            title: '오사카·교토 추천 거점 숙소 & 차량/주요 시설 가이드',
+            lodging: '난바·도톤보리·우메다(오사카 쇼핑·미식 중심), 교토 가와라마치·기온(전통 감성 료칸)',
+            transport: '간사이공항 하루카 특급열차, 오사카 메트로(엔조이 에코카드), 한큐/게이한 전철',
+            main: '간사이국제공항, 신오사카역(신칸센), 난바역 대형 코인락커, 다이마루 백화점 면세 카운터'
+        },
+        fukuoka: {
+            title: '후쿠오카 추천 거점 숙소 & 차량/주요 시설 가이드',
+            lodging: '하카타역 인근(근교 이동 최적), 텐진(쇼핑·야타이 포차), 유후인(전통 온천 료칸)',
+            transport: '후쿠오카 지하철 공항선(공항~시내 5분 컷), JR 산큐패스, 유후인노모리 관광열차',
+            main: '후쿠오카공항(시내 근접), 하카타역 짐보관소, 텐진 지하상가, 유후인 역전 안내소'
+        },
+        tokyo: {
+            title: '도쿄 추천 거점 숙소 & 차량/주요 시설 가이드',
+            lodging: '신주쿠·시부야(번화가 나이트라이프), 긴자·도쿄역(치안·교통 최고), 아사쿠사(가성비 호스텔)',
+            transport: '도쿄 서브웨이 티켓(24/48/72시간 무제한권), JR 야마노테 순환선',
+            main: '나리타/하네다 공항(스카이라이너/모노레일), 도쿄역 물품보관소, 성루카 국제병원(영어 진료)'
+        },
+        danang: {
+            title: '다낭 추천 거점 숙소 & 차량/주요 시설 가이드',
+            lodging: '미케비치 해변가(가성비 오션뷰 호텔/리조트), 한시장 시내(도보 투어), 호이안 올드타운(부티크 리조트)',
+            transport: '그랩(Grab) 앱 필수(저렴한 택시 호출), 렌트카(기사 포함 일일 프라이빗 대절)',
+            main: '다낭국제공항, 한시장(환전·쇼핑 필수 거점), 롯데마트(기념품 배달), 빈멕 국제병원'
+        },
+        bangkok: {
+            title: '방콕 추천 거점 숙소 & 차량/주요 시설 가이드',
+            lodging: '수쿰빗·아속·사톤(도심 5성급 호텔), 짜오프라야 강변(럭셔리 호캉스 리조트)',
+            transport: 'BTS 지상철, MRT 지하철, 볼트(Bolt)/그랩(Grab) 앱, 짜오프라야 수상보트',
+            main: '수완나품국제공항, 아이콘시암(대형 복합몰), 센트럴월드 짐보관소, 범룽랏 국제병원'
+        }
+    };
 
     // ==========================================
     // 1. 날짜 선택 및 기간(박/일) 자동 계산
@@ -45,11 +126,10 @@ document.addEventListener('DOMContentLoaded', () => {
     startDateInput.min = todayStr;
     endDateInput.min = todayStr;
 
-    // 기본값 설정 (오늘부터 2박 3일)
     const defaultStart = new Date();
-    defaultStart.setDate(defaultStart.getDate() + 7); // 일주일 뒤
+    defaultStart.setDate(defaultStart.getDate() + 7);
     const defaultEnd = new Date(defaultStart);
-    defaultEnd.setDate(defaultEnd.getDate() + 2); // 2박 3일
+    defaultEnd.setDate(defaultEnd.getDate() + 2);
 
     startDateInput.value = defaultStart.toISOString().slice(0, 10);
     endDateInput.value = defaultEnd.toISOString().slice(0, 10);
@@ -104,9 +184,9 @@ document.addEventListener('DOMContentLoaded', () => {
     endDateInput.addEventListener('change', calculateDuration);
 
     // ==========================================
-    // 2. 관심사 대주제 탭 & 세부항목 다중 선택
+    // 2. 관심사 대주제 탭 & 세부항목 선택 & 기타 입력
     // ==========================================
-    const categoryBtns = document.querySelectorAll('.category-btn');
+    const categoryBtns = document.querySelectorAll('.category-btn:not(#custom-interest-toggle-btn)');
     const subGroups = document.querySelectorAll('.sub-interest-group');
     const selectedInterestsText = document.getElementById('selected-interests-text');
 
@@ -126,7 +206,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 세부 항목 칩 다중 선택 토글
+    // 기타(직접 입력) 토글 버튼
+    if (customInterestToggleBtn) {
+        customInterestToggleBtn.addEventListener('click', () => {
+            customInterestToggleBtn.classList.toggle('active');
+            if (customInterestBox.style.display === 'none') {
+                customInterestBox.style.display = 'block';
+                customInterestInput.focus();
+            } else {
+                customInterestBox.style.display = 'none';
+            }
+            updateSelectedInterestsText();
+        });
+    }
+
+    if (customInterestInput) {
+        customInterestInput.addEventListener('input', updateSelectedInterestsText);
+    }
+
     const chipBtns = document.querySelectorAll('.chip-btn');
     chipBtns.forEach(chip => {
         chip.addEventListener('click', () => {
@@ -137,7 +234,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getSelectedInterests() {
         const activeChips = Array.from(document.querySelectorAll('.chip-btn.active'));
-        return activeChips.map(c => c.getAttribute('data-val'));
+        const list = activeChips.map(c => c.getAttribute('data-val'));
+        if (customInterestInput && customInterestInput.value.trim()) {
+            list.push(`기타: ${customInterestInput.value.trim()}`);
+        }
+        return list;
     }
 
     function updateSelectedInterestsText() {
@@ -151,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 기본 관심사 몇 개 선택 활성화
+    // 기본 관심사 활성화
     const defaultChips = ['유명 대표 맛집', '감성 카페 & 디저트', '오션뷰 & 해변 산책'];
     chipBtns.forEach(chip => {
         if (defaultChips.includes(chip.getAttribute('data-val'))) {
@@ -161,13 +262,12 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSelectedInterestsText();
 
     // ==========================================
-    // 3. 인원 수 슬라이더 바 & 단일 선택 버튼 그룹
+    // 3. 인원 수 슬라이더 & 단일 선택 버튼 그룹
     // ==========================================
     companionRange.addEventListener('input', () => {
         companionBadge.textContent = `${companionRange.value}명`;
     });
 
-    // 버튼 그룹 단일 선택 헬퍼 함수
     function setupSingleChoiceGroup(containerId) {
         const container = document.getElementById(containerId);
         if (!container) return;
@@ -187,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupSingleChoiceGroup('style-choice-group');
 
     // ==========================================
-    // 4. 인기 여행지 순위 탭 & 원클릭 입력
+    // 4. 인기 여행지 순위 탭 & 원클릭 입력 & 시설 가이드 매칭
     // ==========================================
     const rankingTabBtns = document.querySelectorAll('.ranking-tab-btn');
     const rankingLists = {
@@ -215,8 +315,10 @@ document.addEventListener('DOMContentLoaded', () => {
     rankingItems.forEach(item => {
         item.addEventListener('click', () => {
             const selectedDest = item.getAttribute('data-dest');
+            const destKey = item.getAttribute('data-key');
             if (destinationInput && selectedDest) {
                 destinationInput.value = selectedDest;
+                currentFacilityKey = destKey;
                 destinationInput.focus();
                 destinationInput.style.backgroundColor = '#eff6ff';
                 setTimeout(() => {
@@ -226,26 +328,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // 텍스트 직접 입력 시에도 주요 도시 키워드 자동 감지
+    destinationInput.addEventListener('input', () => {
+        const val = destinationInput.value.toLowerCase();
+        if (val.includes('제주')) currentFacilityKey = 'jeju';
+        else if (val.includes('부산')) currentFacilityKey = 'busan';
+        else if (val.includes('강릉') || val.includes('속초')) currentFacilityKey = 'gangneung';
+        else if (val.includes('경주')) currentFacilityKey = 'gyeongju';
+        else if (val.includes('여수')) currentFacilityKey = 'yeosu';
+        else if (val.includes('오사카') || val.includes('교토')) currentFacilityKey = 'osaka';
+        else if (val.includes('후쿠오카') || val.includes('유후인')) currentFacilityKey = 'fukuoka';
+        else if (val.includes('도쿄')) currentFacilityKey = 'tokyo';
+        else if (val.includes('다낭') || val.includes('호이안')) currentFacilityKey = 'danang';
+        else if (val.includes('방콕')) currentFacilityKey = 'bangkok';
+        else currentFacilityKey = null;
+    });
+
     // ==========================================
     // 5. 🎲 랜덤 여행플랜 짜기 기능
     // ==========================================
-    const randomDestinations = [
-        '제주도 서귀포 & 애월', '부산 해운대 & 기장', '강릉 & 속초', 
-        '경주 황리단길 & 불국사', '여수 밤바다 & 오동도', '일본 오사카 & 교토', 
-        '일본 후쿠오카 & 유후인', '일본 도쿄 시부야 & 긴자', '베트남 다낭 & 호이안', 
-        '태국 방콕 & 아유타야', '강원도 춘천 & 가평', '전북 전주 한옥마을'
+    const randomDestList = [
+        { name: '제주도 서귀포 & 애월', key: 'jeju' },
+        { name: '부산 해운대 & 광안리', key: 'busan' },
+        { name: '강릉 & 속초', key: 'gangneung' },
+        { name: '경주 황리단길 & 불국사', key: 'gyeongju' },
+        { name: '여수 밤바다 & 오동도', key: 'yeosu' },
+        { name: '일본 오사카 & 교토', key: 'osaka' },
+        { name: '일본 후쿠오카 & 유후인', key: 'fukuoka' },
+        { name: '일본 도쿄 시부야 & 긴자', key: 'tokyo' },
+        { name: '베트남 다낭 & 호이안', key: 'danang' },
+        { name: '태국 방콕 & 아유타야', key: 'bangkok' }
     ];
-    const budgetOptions = ['30만원', '50만원', '80만원', '100만원', '150만원', '200만원'];
+    const budgetOptions = ['40만원', '60만원', '80만원', '100만원', '150만원', '200만원', '300만원'];
 
     if (randomPlanBtn) {
         randomPlanBtn.addEventListener('click', () => {
-            // 1) 랜덤 여행지
-            const randDest = randomDestinations[Math.floor(Math.random() * randomDestinations.length)];
-            destinationInput.value = randDest;
+            const randItem = randomDestList[Math.floor(Math.random() * randomDestList.length)];
+            destinationInput.value = randItem.name;
+            currentFacilityKey = randItem.key;
 
-            // 2) 랜덤 날짜 (내일부터 3~14일 후 시작, 1~3박)
             const randDaysLater = Math.floor(Math.random() * 12) + 3;
-            const randDuration = Math.floor(Math.random() * 3) + 1; // 1~3박
+            const randDuration = Math.floor(Math.random() * 3) + 1;
             const randStart = new Date();
             randStart.setDate(randStart.getDate() + randDaysLater);
             const randEnd = new Date(randStart);
@@ -255,43 +378,35 @@ document.addEventListener('DOMContentLoaded', () => {
             endDateInput.value = randEnd.toISOString().slice(0, 10);
             calculateDuration();
 
-            // 3) 랜덤 예산
-            const randBudget = budgetOptions[Math.floor(Math.random() * budgetOptions.length)];
-            budgetSelect.value = randBudget;
+            budgetSelect.value = budgetOptions[Math.floor(Math.random() * budgetOptions.length)];
 
-            // 4) 랜덤 관심사 (전체 칩 중 2~3개 랜덤 활성화)
             chipBtns.forEach(c => c.classList.remove('active'));
             const allChipsArr = Array.from(chipBtns);
-            const shuffledChips = allChipsArr.sort(() => 0.5 - Math.random());
-            shuffledChips.slice(0, 3).forEach(c => c.classList.add('active'));
+            const shuffled = allChipsArr.sort(() => 0.5 - Math.random());
+            shuffled.slice(0, 3).forEach(c => c.classList.add('active'));
+            if (customInterestInput) customInterestInput.value = '';
             updateSelectedInterestsText();
 
-            // 5) 랜덤 인원 (1~4명) & 관계
             const randCount = Math.floor(Math.random() * 4) + 1;
             companionRange.value = randCount;
             companionBadge.textContent = `${randCount}명`;
 
-            const relationBtns = document.querySelectorAll('#relation-btn-group .choice-btn');
-            relationBtns.forEach(b => b.classList.remove('active'));
-            const randRelBtn = relationBtns[Math.floor(Math.random() * relationBtns.length)];
-            randRelBtn.classList.add('active');
+            const relBtns = document.querySelectorAll('#relation-btn-group .choice-btn');
+            relBtns.forEach(b => b.classList.remove('active'));
+            relBtns[Math.floor(Math.random() * relBtns.length)].classList.add('active');
 
-            // 6) 랜덤 이동수단
-            const transportBtns = document.querySelectorAll('#transport-btn-group .choice-btn');
-            transportBtns.forEach(b => b.classList.remove('active'));
-            transportBtns[Math.floor(Math.random() * transportBtns.length)].classList.add('active');
+            const transBtns = document.querySelectorAll('#transport-btn-group .choice-btn');
+            transBtns.forEach(b => b.classList.remove('active'));
+            transBtns[Math.floor(Math.random() * transBtns.length)].classList.add('active');
 
-            // 7) 랜덤 숙소
-            const lodgingBtns = document.querySelectorAll('#lodging-btn-group .choice-btn');
-            lodgingBtns.forEach(b => b.classList.remove('active'));
-            lodgingBtns[Math.floor(Math.random() * lodgingBtns.length)].classList.add('active');
+            const lodgeBtns = document.querySelectorAll('#lodging-btn-group .choice-btn');
+            lodgeBtns.forEach(b => b.classList.remove('active'));
+            lodgeBtns[Math.floor(Math.random() * lodgeBtns.length)].classList.add('active');
 
-            // 8) 랜덤 여행 스타일
             const styleBtns = document.querySelectorAll('#style-choice-group .style-card-btn');
             styleBtns.forEach(b => b.classList.remove('active'));
             styleBtns[Math.floor(Math.random() * styleBtns.length)].classList.add('active');
 
-            // 시각적 피드백
             destinationInput.style.backgroundColor = '#f0fdf4';
             setTimeout(() => {
                 destinationInput.style.backgroundColor = '#ffffff';
@@ -300,12 +415,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 6. 폼 제출 및 API 통신
+    // 6. 폼 제출 및 생성 버튼 클릭 후 결과창 표시
     // ==========================================
     travelForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // 6-1. 입력값 취합
         const destination = destinationInput.value.trim();
         const duration = calculateDuration();
         const budget = budgetSelect.value;
@@ -324,13 +438,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const accommodation = activeLodgingBtn ? activeLodgingBtn.getAttribute('data-val') : '가성비 호텔';
 
         const activeStyleBtn = document.querySelector('#style-choice-group .style-card-btn.active');
-        const promptType = activeStyleBtn ? activeStyleBtn.getAttribute('data-style') : 'A';
+        const promptType = activeStyleBtn ? activeStyleBtn.getAttribute('data-style') : '알찬 핵심 코스';
 
-        // 6-2. 프론트엔드 유효성 검증
+        // 유효성 검사
         const missingFields = [];
         if (!destination) missingFields.push('1. 여행지');
         if (!duration) missingFields.push('2. 여행 기간 (시작일/종료일)');
-        if (!budget) missingFields.push('3. 여행 예산');
+        if (!budget) missingFields.push('3. 총 여행 예산');
         if (selectedInterests.length === 0) missingFields.push('4. 관심사 및 선호 활동 (최소 1개 이상 선택)');
         if (!transportation) missingFields.push('6. 선호 이동수단');
         if (!accommodation) missingFields.push('7. 숙소 선호 스타일');
@@ -341,7 +455,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         hideFormError();
+
+        // [중요 요구사항] 사용자가 '여행 일정 생성하기'를 누른 뒤에 결과창 나타나게 처리
+        if (resultSection) {
+            resultSection.style.display = 'block';
+        }
+        if (mainLayout) {
+            mainLayout.classList.add('has-result');
+        }
+
+        // 추천 여행지 편의시설 안내 카드 렌더링
+        if (currentFacilityKey && destinationFacilityData[currentFacilityKey]) {
+            const data = destinationFacilityData[currentFacilityKey];
+            facilityTitle.textContent = data.title;
+            facilityLodging.textContent = data.lodging;
+            facilityTransport.textContent = data.transport;
+            facilityMain.textContent = data.main;
+            facilityBox.style.display = 'block';
+        } else {
+            facilityBox.style.display = 'none';
+        }
+
         setLoadingState(true, '일정을 준비하는 중...', '서버와 연결하고 있습니다.');
+
+        // 모바일/태블릿 화면에서는 결과창으로 부드럽게 스크롤
+        if (window.innerWidth <= 960 && resultSection) {
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+        }
 
         try {
             const response = await fetch('/generate', {
@@ -476,12 +616,12 @@ document.addEventListener('DOMContentLoaded', () => {
         URL.revokeObjectURL(url);
     });
 
-    // 도움 헬퍼 함수들
+    // 헬퍼 함수들
     function setLoadingState(isLoading, titleText = '', descText = '') {
         if (isLoading) {
             submitBtn.disabled = true;
             btnText.textContent = '일정을 계획하는 중...';
-            placeholderBox.style.display = 'none';
+            if (placeholderBox) placeholderBox.style.display = 'none';
             resultContentWrapper.style.display = 'none';
             apiErrorBox.style.display = 'none';
             resultActions.style.display = 'none';
@@ -497,7 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayResult(markdownText) {
-        placeholderBox.style.display = 'none';
+        if (placeholderBox) placeholderBox.style.display = 'none';
         apiErrorBox.style.display = 'none';
 
         if (typeof marked !== 'undefined') {
@@ -526,7 +666,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showApiError(message) {
-        placeholderBox.style.display = 'none';
+        if (placeholderBox) placeholderBox.style.display = 'none';
         resultContentWrapper.style.display = 'none';
         resultActions.style.display = 'none';
 
