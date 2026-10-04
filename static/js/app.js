@@ -395,6 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="${spot.img}" alt="${spot.name}" class="spot-card-img" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=600&q=80'">
                     <span class="spot-type-badge ${spot.type}">${typeBadgeText}</span>
                     <span class="spot-price-badge">${spot.price}</span>
+                    <span class="spot-photo-disclaimer">※ 실제와 사진은 다를 수 있음</span>
                 </div>
                 <div class="spot-card-body">
                     <div class="spot-card-title" title="${spot.name}">${spot.name}</div>

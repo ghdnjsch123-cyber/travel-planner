@@ -588,6 +588,14 @@ body {
     flex-wrap: wrap;
 }
 
+.guide-badge-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+
 .guide-badge {
     background: linear-gradient(135deg, #10b981, #059669);
     color: #ffffff;
@@ -600,11 +608,58 @@ body {
     box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
 }
 
+.guide-disclaimer {
+    font-size: 0.8rem;
+    color: #ef4444;
+    font-weight: 700;
+    background-color: #fef2f2;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid #fee2e2;
+    display: inline-block;
+}
+
 .guide-panel-header h3 {
     font-size: 1.15rem;
     font-weight: 700;
     color: #0f172a;
     margin: 0;
+}
+
+/* 안내 카드 실제와 사진 다름 공지 바 */
+.guide-notice-bar {
+    background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.guide-notice-bar .notice-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.guide-notice-bar .notice-text {
+    font-size: 0.8rem;
+    color: #1e3a8a;
+    line-height: 1.4;
+}
+
+.guide-notice-bar .notice-text strong {
+    color: #dc2626;
+    font-weight: 800;
+}
+
+.placeholder-disclaimer {
+    font-size: 0.8rem;
+    color: #ef4444 !important;
+    font-weight: 700;
+    margin-top: 10px !important;
 }
 
 /* 필터 탭 (전체 15+, 숙소, 차량, 관광지) */
@@ -789,6 +844,21 @@ body {
     color: #fef08a;
     backdrop-filter: blur(6px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.spot-photo-disclaimer {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(15, 23, 42, 0.75);
+    color: #cbd5e1;
+    backdrop-filter: blur(4px);
+    letter-spacing: -0.3px;
+    pointer-events: none;
 }
 
 .spot-card-body {

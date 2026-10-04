@@ -325,7 +325,10 @@
                 <div class="card guide-panel-card" id="guide-panel-card">
                     <div class="guide-panel-header">
                         <div class="guide-header-left">
-                            <span class="guide-badge">✨ EXPLORE & STAY</span>
+                            <div class="guide-badge-wrap">
+                                <span class="guide-badge">✨ EXPLORE & STAY</span>
+                                <span class="guide-disclaimer">※ 실제와 사진은 다를 수 있습니다.</span>
+                            </div>
                             <h3 id="facility-title">선택 여행지 주요 스팟 & 숙소·차량 가이드</h3>
                         </div>
                         <!-- 필터 탭 -->
@@ -342,10 +345,15 @@
                         <div class="placeholder-compass-icon">✈</div>
                         <h4>어디로 떠나고 싶으신가요?</h4>
                         <p>상단의 <strong>인기 순위 여행지</strong>를 클릭하거나 <strong>[랜덤 여행플랜 짜기]</strong>를 누르시면,<br>해당 여행지의 <strong>실제 숙소, 렌트카/교통, 필수 명소 15곳 이상의 사진과 금액 정보</strong>가 이곳에 생생하게 펼쳐집니다.</p>
+                        <p class="placeholder-disclaimer">※ 안내 카드의 실제와 사진은 다를 수 있습니다.</p>
                     </div>
 
                     <!-- 실제 여행지 스팟 15선 이상 갤러리 그리드 -->
                     <div id="guide-content-box" class="guide-content-box" style="display: none;">
+                        <div class="guide-notice-bar">
+                            <span class="notice-icon">📢</span>
+                            <span class="notice-text">안내 카드의 <strong>실제와 사진은 다를 수 있습니다.</strong> (현장 상황 및 계절, 업체 사정에 따라 상이할 수 있습니다)</span>
+                        </div>
                         <div class="spot-cards-grid" id="spot-cards-grid">
                             <!-- JS에서 15개 이상의 실제 스팟 카드가 동적으로 주입됩니다 -->
                         </div>
